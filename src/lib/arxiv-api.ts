@@ -6,6 +6,7 @@ const isServer = typeof window === 'undefined';
 
 if (isServer) {
   // Server-side (Node.js)
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
   const { DOMParser: ServerDOMParser } = require('@xmldom/xmldom');
   DOMParserImpl = ServerDOMParser;
 } else {

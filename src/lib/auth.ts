@@ -90,9 +90,12 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         }
 
         // Try to find user by email or username
-        let user = await getUserByEmail(credentials.username);
+        const username = credentials.username as string;
+        const password = credentials.password as string;
+
+        let user = await getUserByEmail(username);
         if (!user) {
-          user = await getUserByUsername(credentials.username);
+          user = await getUserByUsername(username);
         }
 
         if (!user) {
@@ -100,7 +103,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         }
 
         // Verify password
-        const isValid = await verifyPassword(credentials.password, user.passwordHash);
+        const isValid = await verifyPassword(password, user.passwordHash);
         if (!isValid) {
           return null;
         }
