@@ -2,13 +2,27 @@ import { ArxivPaper, Author } from '@/types/arxiv';
 
 // Use xmldom for server-side parsing, DOMParser for client-side
 let DOMParserImpl: typeof DOMParser;
-if (typeof window === 'undefined') {
+const isServer = typeof window === 'undefined';
+
+if (isServer) {
   // Server-side (Node.js)
   const { DOMParser: ServerDOMParser } = require('@xmldom/xmldom');
   DOMParserImpl = ServerDOMParser;
 } else {
   // Client-side (browser)
   DOMParserImpl = DOMParser;
+}
+
+// Helper to get first element by tag name (works in both environments)
+function getElementByTagName(parent: Document | Element, tagName: string): Element | null {
+  const elements = parent.getElementsByTagName(tagName);
+  return elements.length > 0 ? elements[0] : null;
+}
+
+// Helper to get text content from first element with tag name
+function getTextByTagName(parent: Document | Element, tagName: string): string {
+  const element = getElementByTagName(parent, tagName);
+  return element?.textContent || '';
 }
 
 // Arxiv API configuration
@@ -77,8 +91,8 @@ function buildQueryUrl(options: FetchPapersOptions): string {
  * Parse author element from Arxiv XML
  */
 function parseAuthor(authorEl: Element): Author {
-  const name = authorEl.querySelector('name')?.textContent || 'Unknown';
-  const affiliation = authorEl.querySelector('affiliation')?.textContent || undefined;
+  const name = getTextByTagName(authorEl, 'name') || 'Unknown';
+  const affiliation = getTextByTagName(authorEl, 'affiliation') || undefined;
   return { name, affiliation };
 }
 
@@ -87,40 +101,44 @@ function parseAuthor(authorEl: Element): Author {
  */
 function parseEntry(entry: Element): ArxivPaper {
   // Extract arxiv ID from the id URL
-  const idUrl = entry.querySelector('id')?.textContent || '';
+  const idUrl = getTextByTagName(entry, 'id');
   const idMatch = idUrl.match(/abs\/(.+)$/);
   const id = idMatch ? idMatch[1] : idUrl;
 
   // Get title and clean whitespace
-  const title = (entry.querySelector('title')?.textContent || '')
+  const title = getTextByTagName(entry, 'title')
     .replace(/\s+/g, ' ')
     .trim();
 
   // Get abstract and clean whitespace
-  const abstract = (entry.querySelector('summary')?.textContent || '')
+  const abstract = getTextByTagName(entry, 'summary')
     .replace(/\s+/g, ' ')
     .trim();
 
   // Parse authors
-  const authorElements = entry.querySelectorAll('author');
+  const authorElements = entry.getElementsByTagName('author');
   const authors: Author[] = Array.from(authorElements).map(parseAuthor);
 
   // Get categories
-  const categoryElements = entry.querySelectorAll('category');
+  const categoryElements = entry.getElementsByTagName('category');
   const categories: string[] = Array.from(categoryElements)
     .map(el => el.getAttribute('term'))
     .filter((term): term is string => term !== null);
 
-  // Primary category
-  const primaryCategory = entry.querySelector('arxiv\\:primary_category, primary_category')
-    ?.getAttribute('term') || categories[0] || 'unknown';
+  // Primary category - try both namespace and plain tag
+  let primaryCategory = categories[0] || 'unknown';
+  const primaryCatEl = getElementByTagName(entry, 'primary_category') ||
+                       getElementByTagName(entry, 'arxiv:primary_category');
+  if (primaryCatEl) {
+    primaryCategory = primaryCatEl.getAttribute('term') || primaryCategory;
+  }
 
   // Dates
-  const publishedDate = entry.querySelector('published')?.textContent || '';
-  const updatedDate = entry.querySelector('updated')?.textContent || '';
+  const publishedDate = getTextByTagName(entry, 'published');
+  const updatedDate = getTextByTagName(entry, 'updated');
 
   // URLs
-  const links = entry.querySelectorAll('link');
+  const links = entry.getElementsByTagName('link');
   let pdfUrl = '';
   let arxivUrl = '';
 
@@ -166,27 +184,30 @@ function parseArxivResponse(xmlText: string): FetchPapersResult {
   const doc = parser.parseFromString(xmlText, 'text/xml');
 
   // Check for parse errors
-  const parseError = doc.querySelector('parsererror');
+  const parseError = getElementByTagName(doc, 'parsererror');
   if (parseError) {
     throw new Error('Failed to parse Arxiv API response');
   }
 
-  // Get total results from opensearch namespace
+  // Get total results from opensearch namespace (try both forms)
   const totalResults = parseInt(
-    doc.querySelector('opensearch\\:totalResults, totalResults')?.textContent || '0',
+    getTextByTagName(doc, 'totalResults') ||
+    getTextByTagName(doc, 'opensearch:totalResults') || '0',
     10
   );
   const startIndex = parseInt(
-    doc.querySelector('opensearch\\:startIndex, startIndex')?.textContent || '0',
+    getTextByTagName(doc, 'startIndex') ||
+    getTextByTagName(doc, 'opensearch:startIndex') || '0',
     10
   );
   const itemsPerPage = parseInt(
-    doc.querySelector('opensearch\\:itemsPerPage, itemsPerPage')?.textContent || '0',
+    getTextByTagName(doc, 'itemsPerPage') ||
+    getTextByTagName(doc, 'opensearch:itemsPerPage') || '0',
     10
   );
 
   // Parse entries
-  const entries = doc.querySelectorAll('entry');
+  const entries = doc.getElementsByTagName('entry');
   const papers: ArxivPaper[] = Array.from(entries).map(parseEntry);
 
   return {
