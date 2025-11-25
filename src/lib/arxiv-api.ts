@@ -1,5 +1,16 @@
 import { ArxivPaper, Author } from '@/types/arxiv';
 
+// Use xmldom for server-side parsing, DOMParser for client-side
+let DOMParserImpl: typeof DOMParser;
+if (typeof window === 'undefined') {
+  // Server-side (Node.js)
+  const { DOMParser: ServerDOMParser } = require('@xmldom/xmldom');
+  DOMParserImpl = ServerDOMParser;
+} else {
+  // Client-side (browser)
+  DOMParserImpl = DOMParser;
+}
+
 // Arxiv API configuration
 const ARXIV_API_BASE = 'https://export.arxiv.org/api/query';
 
@@ -151,7 +162,7 @@ function parseEntry(entry: Element): ArxivPaper {
  * Parse the Arxiv API XML response
  */
 function parseArxivResponse(xmlText: string): FetchPapersResult {
-  const parser = new DOMParser();
+  const parser = new DOMParserImpl();
   const doc = parser.parseFromString(xmlText, 'text/xml');
 
   // Check for parse errors
