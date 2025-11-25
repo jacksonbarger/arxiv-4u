@@ -44,11 +44,11 @@ export async function GET(request: NextRequest) {
 
         // Fetch papers from last 7 days
         // Note: In production, you'd want to cache these papers to avoid fetching for each user
-        const papers = await fetchPapers(50); // Fetch recent papers
+        const result = await fetchPapers({ maxResults: 50 }); // Fetch recent papers
 
         // Filter papers by user's categories
         // This is simplified - in production you'd want better category matching
-        const relevantPapers = papers.slice(0, 10); // Send top 10 papers
+        const relevantPapers = result.papers.slice(0, 10); // Send top 10 papers
 
         if (relevantPapers.length === 0) {
           continue; // No papers to send

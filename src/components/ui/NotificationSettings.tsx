@@ -4,14 +4,14 @@ import { useState, useEffect } from 'react';
 import { TopicCategory } from '@/types/arxiv';
 
 const TOPIC_CATEGORIES: { value: TopicCategory; label: string }[] = [
-  { value: 'deep-learning', label: 'Deep Learning' },
-  { value: 'computer-vision', label: 'Computer Vision' },
-  { value: 'nlp', label: 'Natural Language Processing' },
-  { value: 'reinforcement-learning', label: 'Reinforcement Learning' },
-  { value: 'generative-ai', label: 'Generative AI' },
-  { value: 'robotics', label: 'Robotics' },
-  { value: 'theory', label: 'ML Theory' },
-  { value: 'applications', label: 'Applications' },
+  { value: 'agentic-coding', label: 'Agentic Coding' },
+  { value: 'image-generation', label: 'Image Generation' },
+  { value: 'video-generation', label: 'Video Generation' },
+  { value: 'ai-content-creators', label: 'AI Content Creators' },
+  { value: 'comfyui', label: 'ComfyUI' },
+  { value: 'runpod', label: 'RunPod' },
+  { value: 'market-opportunity', label: 'Market Opportunity' },
+  { value: 'other', label: 'Other' },
 ];
 
 interface NotificationSettingsProps {

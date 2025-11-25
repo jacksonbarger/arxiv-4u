@@ -74,7 +74,7 @@ export function getWeeklyDigestEmailHtml(username: string, papers: ArxivPaper[])
         <a href="https://arxiv.org/abs/${paper.id}" style="color: #4A5568; text-decoration: none;">${paper.title}</a>
       </h3>
       <p style="color: #718096; font-size: 14px; margin: 0 0 8px 0;">${paper.authors.slice(0, 3).map(a => a.name).join(', ')}${paper.authors.length > 3 ? ' et al.' : ''}</p>
-      <p style="color: #718096; font-size: 14px; margin: 0 0 12px 0; line-height: 1.5;">${paper.summary.substring(0, 200)}...</p>
+      <p style="color: #718096; font-size: 14px; margin: 0 0 12px 0; line-height: 1.5;">${paper.abstract.substring(0, 200)}...</p>
       <a href="https://arxiv.org/abs/${paper.id}" style="display: inline-block; color: #9EDCE1; text-decoration: none; font-size: 14px; font-weight: 600;">Read More →</a>
     </div>
   `).join('');
@@ -128,7 +128,7 @@ export function getWeeklyDigestEmailText(username: string, papers: ArxivPaper[])
   const paperListText = papers.map(paper => `
 ${paper.title}
 By: ${paper.authors.slice(0, 3).map(a => a.name).join(', ')}${paper.authors.length > 3 ? ' et al.' : ''}
-${paper.summary.substring(0, 200)}...
+${paper.abstract.substring(0, 200)}...
 Read more: https://arxiv.org/abs/${paper.id}
   `).join('\n---\n');
 
