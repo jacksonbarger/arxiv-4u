@@ -9,6 +9,14 @@ export interface User {
   username: string;
   passwordHash: string;
   createdAt: string;
+  // Email verification
+  emailVerified: boolean;
+  verificationToken?: string;
+  verificationTokenExpiry?: string;
+  // Notification preferences
+  emailNotifications: boolean;
+  notificationFrequency: 'daily' | 'weekly';
+  notificationCategories: string[]; // TopicCategory array
 }
 
 // Get user by email
@@ -33,8 +41,25 @@ export async function getUserByUsername(username: string): Promise<User | null> 
   }
 }
 
+// Get user by ID
+export async function getUserById(id: string): Promise<User | null> {
+  try {
+    const user = await kv.get<User>(`user:id:${id}`);
+    return user;
+  } catch (error) {
+    console.error('Error getting user:', error);
+    return null;
+  }
+}
+
 // Create new user
-export async function createUser(email: string, username: string, password: string): Promise<User | null> {
+export async function createUser(
+  email: string,
+  username: string,
+  password: string,
+  verificationToken?: string,
+  verificationTokenExpiry?: string
+): Promise<User | null> {
   try {
     // Check if user already exists
     const existingEmail = await getUserByEmail(email);
@@ -57,12 +82,25 @@ export async function createUser(email: string, username: string, password: stri
       username,
       passwordHash,
       createdAt: new Date().toISOString(),
+      emailVerified: false,
+      verificationToken,
+      verificationTokenExpiry,
+      emailNotifications: true, // Default to enabled
+      notificationFrequency: 'weekly',
+      notificationCategories: [], // User can customize later
     };
 
     // Store user by email and username for lookup
     await kv.set(`user:email:${email}`, user);
     await kv.set(`user:username:${username}`, user);
     await kv.set(`user:id:${user.id}`, user);
+
+    // Store verification token if provided
+    if (verificationToken) {
+      await kv.set(`verification:${verificationToken}`, user.id, {
+        ex: 24 * 60 * 60, // Expire in 24 hours
+      });
+    }
 
     return user;
   } catch (error) {
@@ -74,6 +112,41 @@ export async function createUser(email: string, username: string, password: stri
 // Verify password
 export async function verifyPassword(password: string, hash: string): Promise<boolean> {
   return bcrypt.compare(password, hash);
+}
+
+// Verify email with token
+export async function verifyEmail(token: string): Promise<boolean> {
+  try {
+    // Get user ID from verification token
+    const userId = await kv.get<string>(`verification:${token}`);
+    if (!userId) {
+      return false; // Token not found or expired
+    }
+
+    // Get user
+    const user = await getUserById(userId);
+    if (!user) {
+      return false;
+    }
+
+    // Update user to verified
+    user.emailVerified = true;
+    user.verificationToken = undefined;
+    user.verificationTokenExpiry = undefined;
+
+    // Update user in all KV keys
+    await kv.set(`user:email:${user.email}`, user);
+    await kv.set(`user:username:${user.username}`, user);
+    await kv.set(`user:id:${user.id}`, user);
+
+    // Delete verification token
+    await kv.del(`verification:${token}`);
+
+    return true;
+  } catch (error) {
+    console.error('Error verifying email:', error);
+    return false;
+  }
 }
 
 export const { handlers, signIn, signOut, auth } = NextAuth({

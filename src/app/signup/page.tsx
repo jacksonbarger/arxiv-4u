@@ -12,6 +12,7 @@ export default function SignupPage() {
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [error, setError] = useState('');
+  const [success, setSuccess] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -42,25 +43,56 @@ export default function SignupPage() {
         return;
       }
 
-      // Auto sign in after signup
-      const result = await signIn('credentials', {
-        username,
-        password,
-        redirect: false,
-      });
-
-      if (result?.error) {
-        setError('Account created but login failed. Please try logging in.');
-        setIsLoading(false);
-      } else {
-        router.push('/');
-        router.refresh();
-      }
+      // Show success message instead of auto-login
+      setSuccess(true);
+      setIsLoading(false);
     } catch (err) {
       setError('An error occurred. Please try again.');
       setIsLoading(false);
     }
   };
+
+  // Show success state
+  if (success) {
+    return (
+      <div
+        className="min-h-screen flex items-center justify-center px-4 py-12"
+        style={{ backgroundColor: '#F5F3EF' }}
+      >
+        <div
+          className="w-full max-w-md p-8 rounded-3xl shadow-lg text-center"
+          style={{ backgroundColor: '#FFFFFF' }}
+        >
+          <div className="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-6" style={{ backgroundColor: '#9EDCE1' }}>
+            <svg
+              className="w-8 h-8"
+              style={{ color: '#FFFFFF' }}
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 19v-8.93a2 2 0 01.89-1.664l7-4.666a2 2 0 012.22 0l7 4.666A2 2 0 0121 10.07V19M3 19a2 2 0 002 2h14a2 2 0 002-2M3 19l6.75-4.5M21 19l-6.75-4.5M3 10l6.75 4.5M21 10l-6.75 4.5m0 0l-1.14.76a2 2 0 01-2.22 0l-1.14-.76" />
+            </svg>
+          </div>
+          <h1 className="text-2xl font-bold mb-4" style={{ color: '#4A5568' }}>
+            Check Your Email
+          </h1>
+          <p className="mb-6" style={{ color: '#718096' }}>
+            We&apos;ve sent a verification link to <strong>{email}</strong>. Please check your email and click the link to verify your account.
+          </p>
+          <Link
+            href="/login"
+            className="inline-block px-6 py-3 rounded-full font-medium transition-colors"
+            style={{ backgroundColor: '#9EDCE1', color: '#FFFFFF' }}
+            onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#7DC5CA'}
+            onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#9EDCE1'}
+          >
+            Go to Login
+          </Link>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div

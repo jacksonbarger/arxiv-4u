@@ -1,5 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createUser } from '@/lib/auth';
+import { Resend } from 'resend';
+import { getVerificationEmailHtml, getVerificationEmailText } from '@/lib/email-templates';
+import crypto from 'crypto';
+
+const resend = new Resend(process.env.RESEND_API_KEY);
 
 export async function POST(request: NextRequest) {
   try {
@@ -39,8 +44,12 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Create user
-    const user = await createUser(email, username, password);
+    // Generate verification token
+    const verificationToken = crypto.randomBytes(32).toString('hex');
+    const verificationTokenExpiry = new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(); // 24 hours
+
+    // Create user with verification token
+    const user = await createUser(email, username, password, verificationToken, verificationTokenExpiry);
 
     if (!user) {
       return NextResponse.json(
@@ -49,8 +58,25 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // Send verification email
+    const verificationUrl = `${process.env.NEXTAUTH_URL || 'http://localhost:3000'}/verify?token=${verificationToken}`;
+
+    try {
+      await resend.emails.send({
+        from: process.env.RESEND_FROM_EMAIL || 'Arxiv-4U <onboarding@resend.dev>',
+        to: email,
+        subject: 'Verify your email - Arxiv-4U',
+        html: getVerificationEmailHtml(username, verificationUrl),
+        text: getVerificationEmailText(username, verificationUrl),
+      });
+    } catch (emailError) {
+      console.error('Failed to send verification email:', emailError);
+      // Don't fail signup if email fails - user can request resend
+    }
+
     return NextResponse.json({
       success: true,
+      message: 'Account created! Please check your email to verify your account.',
       user: {
         id: user.id,
         email: user.email,
