@@ -3,6 +3,7 @@
 import { ArxivPaper, CategoryMatch, TopicCategory } from '@/types/arxiv';
 import { SearchBar } from './ui/SearchBar';
 import { CategoryPills } from './ui/CategoryPills';
+import { UserMenu } from './ui/UserMenu';
 import { FeaturedPaperCard, FeaturedPaperCardSkeleton } from './FeaturedPaperCard';
 import { RecommendationCard, RecommendationCardSkeleton } from './RecommendationCard';
 import { FilterState } from './FilterPanel';
@@ -79,6 +80,7 @@ export function HomeFeed({
 
             {/* Actions */}
             <div className="flex items-center gap-2">
+              <UserMenu />
               <button
                 onClick={onRefresh}
                 disabled={isLoading}
