@@ -274,15 +274,15 @@ export default function Home() {
   // Home feed (default)
   return (
     <>
-      {/* Error toast */}
+      {/* Error toast - dismissible */}
       {error && (
-        <div className="fixed top-4 left-4 right-4 z-50 md:left-auto md:right-4 md:w-96">
+        <div className="fixed bottom-24 left-4 right-4 z-40 md:left-auto md:right-4 md:w-96 md:bottom-4">
           <div className="rounded-2xl bg-red-50 dark:bg-red-900/30 border border-red-200 dark:border-red-800 p-4 shadow-lg">
             <div className="flex items-start gap-3">
               <svg className="w-5 h-5 text-red-500 flex-shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
-              <div className="flex-1">
+              <div className="flex-1 min-w-0">
                 <p className="text-sm font-medium text-red-800 dark:text-red-200">{error}</p>
                 <button
                   type="button"
@@ -292,6 +292,16 @@ export default function Home() {
                   Try again
                 </button>
               </div>
+              <button
+                type="button"
+                onClick={() => window.location.reload()}
+                className="p-1 rounded-lg hover:bg-red-100 dark:hover:bg-red-800/50 transition-colors flex-shrink-0"
+                aria-label="Dismiss"
+              >
+                <svg className="w-4 h-4 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
             </div>
           </div>
         </div>
