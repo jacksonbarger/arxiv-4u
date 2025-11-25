@@ -1,4 +1,4 @@
-import { NextAuthOptions } from 'next-auth';
+import NextAuth from 'next-auth';
 import CredentialsProvider from 'next-auth/providers/credentials';
 import { kv } from '@vercel/kv';
 import bcrypt from 'bcryptjs';
@@ -76,7 +76,7 @@ export async function verifyPassword(password: string, hash: string): Promise<bo
   return bcrypt.compare(password, hash);
 }
 
-export const authOptions: NextAuthOptions = {
+export const { handlers, signIn, signOut, auth } = NextAuth({
   providers: [
     CredentialsProvider({
       name: 'Credentials',
@@ -138,4 +138,4 @@ export const authOptions: NextAuthOptions = {
       return session;
     },
   },
-};
+});
