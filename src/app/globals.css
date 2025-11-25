@@ -1,8 +1,33 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* Sandy Beach palette */
+  --sandy-aqua: #C0E5E8;
+  --sandy-cream: #EFECE6;
+  --sandy-mint: #DAF4EF;
+  --sandy-pale: #DEEBEB;
+  --sandy-turquoise: #9EDCE1;
+  --sandy-sand: #EFE4CB;
+
+  /* App backgrounds */
+  --background: #F5F3EF;
+  --background-secondary: #EFECE6;
+  --foreground: #4A5568;
+  --foreground-muted: #718096;
+
+  /* Card backgrounds */
+  --card-bg: #FFFFFF;
+  --card-border: #E2E8F0;
+
+  /* Accent colors for categories - softer versions */
+  --color-agentic: #9EDCE1;
+  --color-image: #C0E5E8;
+  --color-video: #DAF4EF;
+  --color-content: #9EDCE1;
+  --color-comfyui: #DAF4EF;
+  --color-runpod: #DEEBEB;
+  --color-market: #EFE4CB;
+  --color-other: #EFECE6;
 }
 
 @theme inline {
@@ -14,8 +39,13 @@
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    /* Dark mode - warmer dark tones */
+    --background: #1a1a1a;
+    --background-secondary: #242424;
+    --foreground: #E2E8F0;
+    --foreground-muted: #A0AEC0;
+    --card-bg: #242424;
+    --card-border: #3a3a3a;
   }
 }
 
@@ -23,4 +53,99 @@ body {
   background: var(--background);
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
+}
+
+/* Override Tailwind zinc colors with Sandy Beach palette in light mode */
+@media (prefers-color-scheme: light) {
+  .bg-zinc-50 {
+    background-color: var(--background) !important;
+  }
+  .bg-zinc-100 {
+    background-color: var(--background-secondary) !important;
+  }
+  .dark\:bg-zinc-950 {
+    background-color: var(--background) !important;
+  }
+  .bg-white {
+    background-color: var(--card-bg) !important;
+  }
+  .border-zinc-100,
+  .border-zinc-200 {
+    border-color: var(--card-border) !important;
+  }
+  .text-zinc-900 {
+    color: var(--foreground) !important;
+  }
+  .text-zinc-500,
+  .text-zinc-600 {
+    color: var(--foreground-muted) !important;
+  }
+}
+
+/* Hide scrollbar for horizontal scroll containers */
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+/* Smooth scroll snap for category pills */
+.snap-x {
+  scroll-snap-type: x mandatory;
+}
+
+.snap-start {
+  scroll-snap-align: start;
+}
+
+/* Line clamp utilities */
+.line-clamp-2 {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.line-clamp-3 {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* Safe area padding for mobile bottom nav */
+@supports (padding-bottom: env(safe-area-inset-bottom)) {
+  .pb-safe {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+}
+
+/* Animation for abstract art */
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0) rotate(0deg);
+  }
+  50% {
+    transform: translateY(-10px) rotate(2deg);
+  }
+}
+
+@keyframes pulse-glow {
+  0%, 100% {
+    opacity: 0.6;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+.animate-float {
+  animation: float 6s ease-in-out infinite;
+}
+
+.animate-pulse-glow {
+  animation: pulse-glow 3s ease-in-out infinite;
 }
