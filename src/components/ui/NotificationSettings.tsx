@@ -186,7 +186,7 @@ export function NotificationSettings({ isOpen, onClose }: NotificationSettingsPr
                         />
                         <div>
                           <div className="font-medium" style={{ color: '#4A5568' }}>Weekly</div>
-                          <p className="text-xs" style={{ color: '#718096' }}>Get a weekly summary every Sunday</p>
+                          <p className="text-xs" style={{ color: '#718096' }}>Get a weekly summary every Wednesday</p>
                         </div>
                       </label>
                     </div>
