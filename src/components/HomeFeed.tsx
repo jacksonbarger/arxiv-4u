@@ -1,9 +1,12 @@
 'use client';
 
+import { useState } from 'react';
 import { ArxivPaper, CategoryMatch, TopicCategory } from '@/types/arxiv';
 import { SearchBar } from './ui/SearchBar';
 import { CategoryPills } from './ui/CategoryPills';
 import { UserMenu } from './ui/UserMenu';
+import { NotificationBell } from './ui/NotificationBell';
+import { NotificationPanel } from './ui/NotificationPanel';
 import { FeaturedPaperCard, FeaturedPaperCardSkeleton } from './FeaturedPaperCard';
 import { RecommendationCard, RecommendationCardSkeleton } from './RecommendationCard';
 import { FilterState } from './FilterPanel';
@@ -35,6 +38,7 @@ export function HomeFeed({
   onRefresh,
   onFilterDrawerOpen,
 }: HomeFeedProps) {
+  const [isNotificationPanelOpen, setIsNotificationPanelOpen] = useState(false);
   const featuredPaper = papers[0];
   const recommendedPapers = papers.slice(1);
 
@@ -79,8 +83,16 @@ export function HomeFeed({
             </div>
 
             {/* Actions */}
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 relative">
               <UserMenu />
+              <NotificationBell
+                onOpenPanel={() => setIsNotificationPanelOpen(!isNotificationPanelOpen)}
+                isOpen={isNotificationPanelOpen}
+              />
+              <NotificationPanel
+                isOpen={isNotificationPanelOpen}
+                onClose={() => setIsNotificationPanelOpen(false)}
+              />
               <button
                 onClick={onRefresh}
                 disabled={isLoading}
