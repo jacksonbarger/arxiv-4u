@@ -11,6 +11,7 @@ import { HomeFeed } from '@/components/HomeFeed';
 import { PaperDetail } from '@/components/PaperDetail';
 import { KeywordManager } from '@/components/KeywordManager';
 import { ReferralDashboard } from '@/components/ReferralDashboard';
+import { SubscriptionManager } from '@/components/SubscriptionManager';
 import { useToast } from '@/components/ui/Toast';
 import { EmptyBookmarks } from '@/components/ui/EmptyState';
 import { SuccessCelebration } from '@/components/ui/Confetti';
@@ -273,6 +274,7 @@ export default function Home() {
           </header>
 
           <main className="px-4 py-4 md:px-6 lg:px-8 max-w-4xl mx-auto pb-24 space-y-8">
+            <SubscriptionManager />
             <KeywordManager />
             <ReferralDashboard />
           </main>

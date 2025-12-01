@@ -3,6 +3,7 @@
 import { ArxivPaper, CategoryMatch, TopicCategory } from '@/types/arxiv';
 import { AbstractArt } from './ui/AbstractArt';
 import { CATEGORY_COLORS, CATEGORY_LABELS, CATEGORY_ICONS } from '@/lib/keywords';
+import { estimateReadingTime, getReadingTimeBadgeColor } from '@/lib/readingTime';
 
 interface RecommendationCardProps {
   paper: ArxivPaper;
@@ -37,6 +38,8 @@ export function RecommendationCard({
 }: RecommendationCardProps) {
   const primaryCategory: TopicCategory = categoryMatches[0]?.category || 'other';
   const color = CATEGORY_COLORS[primaryCategory];
+  const readingTime = estimateReadingTime(paper.abstract);
+  const readingTimeBadge = getReadingTimeBadgeColor(readingTime.category);
 
   if (variant === 'compact') {
     return (
@@ -69,6 +72,13 @@ export function RecommendationCard({
           </div>
           <div className="flex items-center gap-2 text-xs" style={{ color: '#718096' }}>
             <span>{formatDate(paper.publishedDate)}</span>
+            <span style={{ color: '#C0E5E8' }}>•</span>
+            <span
+              className="px-2 py-0.5 rounded-full text-[10px] font-medium"
+              style={{ backgroundColor: readingTimeBadge.bg, color: readingTimeBadge.text }}
+            >
+              {readingTime.displayText}
+            </span>
           </div>
         </div>
       </article>
@@ -162,6 +172,13 @@ export function RecommendationCard({
           </div>
           <span style={{ color: '#C0E5E8' }}>•</span>
           <span>{formatDate(paper.publishedDate)}</span>
+          <span style={{ color: '#C0E5E8' }}>•</span>
+          <span
+            className="px-2 py-0.5 rounded-full text-[10px] font-medium"
+            style={{ backgroundColor: readingTimeBadge.bg, color: readingTimeBadge.text }}
+          >
+            {readingTime.displayText}
+          </span>
           {categoryMatches[0]?.score && (
             <>
               <span style={{ color: '#C0E5E8' }}>•</span>

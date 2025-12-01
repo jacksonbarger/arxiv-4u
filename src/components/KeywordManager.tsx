@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { TopicCategory } from '@/types/arxiv';
 import { useUserKeywords } from '@/lib/useUserKeywords';
+import { useToast } from '@/components/ui/Toast';
 import {
   CATEGORY_KEYWORDS,
   CATEGORY_LABELS,
@@ -79,6 +80,7 @@ interface CategorySectionProps {
   isUserAdded: (term: string) => boolean;
   isDisabled: (term: string) => boolean;
   stats: { defaults: number; added: number; removed: number; total: number };
+  showToast: (message: string, type: 'success' | 'error' | 'warning' | 'info') => void;
 }
 
 function CategorySection({
@@ -91,6 +93,7 @@ function CategorySection({
   isUserAdded,
   isDisabled,
   stats,
+  showToast,
 }: CategorySectionProps) {
   const [newKeyword, setNewKeyword] = useState('');
   const [newWeight, setNewWeight] = useState(8);
@@ -103,6 +106,7 @@ function CategorySection({
   const handleAdd = () => {
     if (newKeyword.trim()) {
       onAddKeyword(newKeyword.trim(), newWeight);
+      showToast(`Added "${newKeyword.trim()}" to ${CATEGORY_LABELS[category]}`, 'success');
       setNewKeyword('');
       setNewWeight(8);
     }
@@ -195,7 +199,10 @@ function CategorySection({
               {(stats.added > 0 || stats.removed > 0) && (
                 <button
                   type="button"
-                  onClick={onResetCategory}
+                  onClick={() => {
+                    onResetCategory();
+                    showToast(`Reset ${CATEGORY_LABELS[category]} to defaults`, 'info');
+                  }}
                   className="text-xs text-gray-500 hover:text-red-600 transition-colors"
                 >
                   Reset to defaults
@@ -209,7 +216,11 @@ function CategorySection({
                   keyword={keyword}
                   isDefault={!isUserAdded(keyword.term)}
                   isDisabled={false}
-                  onRemove={() => onRemoveKeyword(keyword.term)}
+                  onRemove={() => {
+                    onRemoveKeyword(keyword.term);
+                    const action = isUserAdded(keyword.term) ? 'Removed' : 'Disabled';
+                    showToast(`${action} "${keyword.term}"`, 'info');
+                  }}
                   color={color}
                 />
               ))}
@@ -231,7 +242,10 @@ function CategorySection({
                     isDefault={true}
                     isDisabled={true}
                     onRemove={() => {}}
-                    onToggle={() => onAddKeyword(keyword.term, keyword.weight)}
+                    onToggle={() => {
+                      onAddKeyword(keyword.term, keyword.weight);
+                      showToast(`Re-enabled "${keyword.term}"`, 'success');
+                    }}
                     color={color}
                   />
                 ))}
@@ -257,6 +271,7 @@ export function KeywordManager() {
     getCategoryStats,
   } = useUserKeywords();
 
+  const { showToast } = useToast();
   const [searchFilter, setSearchFilter] = useState('');
 
   if (!isLoaded) {
@@ -310,7 +325,10 @@ export function KeywordManager() {
         {(totalStats.added > 0 || totalStats.removed > 0) && (
           <button
             type="button"
-            onClick={resetAll}
+            onClick={() => {
+              resetAll();
+              showToast('All keywords reset to defaults', 'info');
+            }}
             className="px-4 py-2 text-sm text-red-600 hover:bg-red-50 rounded-lg transition-colors"
           >
             Reset All to Defaults
@@ -372,6 +390,7 @@ export function KeywordManager() {
             isUserAdded={(term) => isUserAdded(category, term)}
             isDisabled={(term) => isDisabled(category, term)}
             stats={getCategoryStats(category)}
+            showToast={showToast}
           />
         ))}
 

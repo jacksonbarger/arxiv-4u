@@ -7,9 +7,11 @@ import { CategoryPills } from './ui/CategoryPills';
 import { UserMenu } from './ui/UserMenu';
 import { NotificationBell } from './ui/NotificationBell';
 import { NotificationPanel } from './ui/NotificationPanel';
+import { ThemeToggle } from './ui/ThemeToggle';
 import { FeaturedPaperCard, FeaturedPaperCardSkeleton } from './FeaturedPaperCard';
 import { RecommendationCard, RecommendationCardSkeleton } from './RecommendationCard';
 import { FilterState } from './FilterPanel';
+import { EmptySearchResults } from './ui/EmptyState';
 
 interface HomeFeedProps {
   papers: ArxivPaper[];
@@ -84,6 +86,7 @@ export function HomeFeed({
 
             {/* Actions */}
             <div className="flex items-center gap-2 relative">
+              <ThemeToggle />
               <UserMenu />
               <NotificationBell
                 onOpenPanel={() => setIsNotificationPanelOpen(!isNotificationPanelOpen)}
@@ -194,42 +197,25 @@ export function HomeFeed({
             </span>
           </div>
 
-          <div className="space-y-3">
+          <div className="space-y-3 stagger-children">
             {isLoading ? (
               Array.from({ length: 5 }).map((_, i) => (
                 <RecommendationCardSkeleton key={i} />
               ))
             ) : recommendedPapers.length > 0 ? (
               recommendedPapers.map((paper) => (
-                <RecommendationCard
-                  key={paper.id}
-                  paper={paper}
-                  categoryMatches={categoryMatchesMap.get(paper.id)}
-                  onClick={() => onPaperClick(paper)}
-                  onBookmarkClick={() => onBookmarkToggle(paper.id)}
-                  isBookmarked={isBookmarked(paper.id)}
-                />
+                <div key={paper.id} className="smooth-hover">
+                  <RecommendationCard
+                    paper={paper}
+                    categoryMatches={categoryMatchesMap.get(paper.id)}
+                    onClick={() => onPaperClick(paper)}
+                    onBookmarkClick={() => onBookmarkToggle(paper.id)}
+                    isBookmarked={isBookmarked(paper.id)}
+                  />
+                </div>
               ))
             ) : (
-              <div className="py-12 text-center">
-                <svg
-                  className="w-12 h-12 mx-auto mb-4"
-                  style={{ color: '#C0E5E8' }}
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={1.5}
-                    d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
-                  />
-                </svg>
-                <p style={{ color: '#718096' }}>
-                  No more papers matching your filters
-                </p>
-              </div>
+              <EmptySearchResults />
             )}
           </div>
         </section>

@@ -37,15 +37,31 @@
   --font-mono: var(--font-geist-mono);
 }
 
+/* Dark mode colors */
+.dark {
+  /* Dark mode - warmer dark tones */
+  --background: #0a0a0a;
+  --background-secondary: #1a1a1a;
+  --foreground: #E2E8F0;
+  --foreground-muted: #A0AEC0;
+  --card-bg: #1a1a1a;
+  --card-border: #2D3748;
+
+  /* Darker versions of accent colors for dark mode */
+  --sandy-turquoise: #7DC5CA;
+  --sandy-mint: #A8D5CF;
+  --sandy-aqua: #98C1C3;
+}
+
 @media (prefers-color-scheme: dark) {
-  :root {
-    /* Dark mode - warmer dark tones */
-    --background: #1a1a1a;
-    --background-secondary: #242424;
+  :root:not(.light) {
+    /* Auto dark mode if user hasn't set preference */
+    --background: #0a0a0a;
+    --background-secondary: #1a1a1a;
     --foreground: #E2E8F0;
     --foreground-muted: #A0AEC0;
-    --card-bg: #242424;
-    --card-border: #3a3a3a;
+    --card-bg: #1a1a1a;
+    --card-border: #2D3748;
   }
 }
 
@@ -148,4 +164,158 @@ body {
 
 .animate-pulse-glow {
   animation: pulse-glow 3s ease-in-out infinite;
+}
+
+/* Shimmer animation for skeleton loaders */
+@keyframes shimmer {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+/* Smooth entrance animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideInRight {
+  from {
+    opacity: 0;
+    transform: translateX(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes scaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* Confetti animation for success states */
+@keyframes confetti-fall {
+  0% {
+    transform: translateY(-100vh) rotate(0deg);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(100vh) rotate(720deg);
+    opacity: 0;
+  }
+}
+
+.animate-fadeIn {
+  animation: fadeIn 0.5s ease-out;
+}
+
+.animate-slideInRight {
+  animation: slideInRight 0.4s ease-out;
+}
+
+.animate-scaleIn {
+  animation: scaleIn 0.3s ease-out;
+}
+
+/* Stagger children animations */
+.stagger-children > * {
+  animation: fadeIn 0.5s ease-out;
+  animation-fill-mode: both;
+}
+
+.stagger-children > *:nth-child(1) { animation-delay: 0.05s; }
+.stagger-children > *:nth-child(2) { animation-delay: 0.1s; }
+.stagger-children > *:nth-child(3) { animation-delay: 0.15s; }
+.stagger-children > *:nth-child(4) { animation-delay: 0.2s; }
+.stagger-children > *:nth-child(5) { animation-delay: 0.25s; }
+.stagger-children > *:nth-child(6) { animation-delay: 0.3s; }
+
+/* Slide out animations for toasts */
+@keyframes slideOutRight {
+  from {
+    opacity: 1;
+    transform: translateX(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateX(100%);
+  }
+}
+
+.animate-slideOutRight {
+  animation: slideOutRight 0.3s ease-out;
+}
+
+/* Bounce animation for interactive elements */
+@keyframes bounce {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+.animate-bounce {
+  animation: bounce 0.6s ease-in-out;
+}
+
+/* Heartbeat animation for important CTAs */
+@keyframes heartbeat {
+  0%, 100% {
+    transform: scale(1);
+  }
+  14% {
+    transform: scale(1.05);
+  }
+  28% {
+    transform: scale(1);
+  }
+  42% {
+    transform: scale(1.05);
+  }
+  56% {
+    transform: scale(1);
+  }
+}
+
+.animate-heartbeat {
+  animation: heartbeat 1.5s ease-in-out infinite;
+}
+
+/* Smooth hover effects */
+.smooth-hover {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.smooth-hover:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+}
+
+/* Fade out animation */
+@keyframes fadeOut {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
 }
