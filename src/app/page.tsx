@@ -10,6 +10,10 @@ import { OnboardingScreen } from '@/components/OnboardingScreen';
 import { HomeFeed } from '@/components/HomeFeed';
 import { PaperDetail } from '@/components/PaperDetail';
 import { KeywordManager } from '@/components/KeywordManager';
+import { ReferralDashboard } from '@/components/ReferralDashboard';
+import { useToast } from '@/components/ui/Toast';
+import { EmptyBookmarks } from '@/components/ui/EmptyState';
+import { SuccessCelebration } from '@/components/ui/Confetti';
 
 type Screen = 'onboarding' | 'home' | 'detail' | 'categories' | 'search' | 'bookmarks' | 'settings';
 
@@ -18,10 +22,25 @@ export default function Home() {
   const [screen, setScreen] = useState<Screen>('home');
   const [selectedPaper, setSelectedPaper] = useState<ArxivPaper | null>(null);
   const [isFilterDrawerOpen, setIsFilterDrawerOpen] = useState(false);
+  const [showCelebration, setShowCelebration] = useState(false);
+  const [celebrationMessage, setCelebrationMessage] = useState('');
 
   const { hasCompletedOnboarding, isLoading: isOnboardingLoading, completeOnboarding } = useOnboarding();
   const { toggleBookmark, isBookmarked, bookmarkCount, bookmarkedIds } = useBookmarks();
   const isMobile = useIsMobile();
+  const { showToast } = useToast();
+
+  // Enhanced toggle bookmark with toast feedback
+  const handleToggleBookmark = useCallback((paperId: string) => {
+    const wasBookmarked = isBookmarked(paperId);
+    toggleBookmark(paperId);
+
+    if (wasBookmarked) {
+      showToast('Bookmark removed', 'info');
+    } else {
+      showToast('Paper bookmarked! 🔖', 'success');
+    }
+  }, [toggleBookmark, isBookmarked, showToast]);
 
   const {
     filteredPapers,
@@ -65,7 +84,9 @@ export default function Home() {
 
   const handleOnboardingComplete = () => {
     completeOnboarding();
-    setScreen('home');
+    setCelebrationMessage('Welcome to Arxiv-4U! 🎉');
+    setShowCelebration(true);
+    setTimeout(() => setScreen('home'), 1000);
   };
 
   const handlePaperClick = (paper: ArxivPaper) => {
@@ -124,8 +145,13 @@ export default function Home() {
           paper={selectedPaper}
           categoryMatches={categoryMatchesMap.get(selectedPaper.id)}
           onBack={handleBack}
-          onBookmarkToggle={() => toggleBookmark(selectedPaper.id)}
+          onBookmarkToggle={() => handleToggleBookmark(selectedPaper.id)}
           isBookmarked={isBookmarked(selectedPaper.id)}
+          allPapers={filteredPapers}
+          categoryMatchesMap={categoryMatchesMap}
+          onPaperClick={handlePaperClick}
+          isBookmarkedFn={isBookmarked}
+          onBookmarkToggleFn={handleToggleBookmark}
         />
         {isMobile && (
           <BottomNav
@@ -168,12 +194,12 @@ export default function Home() {
 
           <main className="px-4 py-4 md:px-6 lg:px-8 max-w-4xl mx-auto pb-24">
             {bookmarkedPapers.length > 0 ? (
-              <div className="space-y-3">
+              <div className="space-y-3 stagger-children">
                 {bookmarkedPapers.map((paper) => (
                   <article
                     key={paper.id}
                     onClick={() => handlePaperClick(paper)}
-                    className="flex gap-4 p-4 rounded-2xl cursor-pointer transition-all"
+                    className="flex gap-4 p-4 rounded-2xl cursor-pointer smooth-hover"
                     style={{ backgroundColor: '#FFFFFF', border: '1px solid #E2E8F0' }}
                   >
                     <div className="flex-1 min-w-0">
@@ -190,7 +216,7 @@ export default function Home() {
                       aria-label="Remove bookmark"
                       onClick={(e) => {
                         e.stopPropagation();
-                        toggleBookmark(paper.id);
+                        handleToggleBookmark(paper.id);
                       }}
                       className="p-2 -m-2"
                       style={{ color: '#9EDCE1' }}
@@ -203,17 +229,7 @@ export default function Home() {
                 ))}
               </div>
             ) : (
-              <div className="py-20 text-center">
-                <svg className="w-16 h-16 mx-auto mb-4" style={{ color: '#C0E5E8' }} fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" />
-                </svg>
-                <h2 className="text-lg font-semibold mb-2" style={{ color: '#4A5568' }}>
-                  No bookmarks yet
-                </h2>
-                <p style={{ color: '#718096' }}>
-                  Save papers to read them later
-                </p>
-              </div>
+              <EmptyBookmarks />
             )}
           </main>
         </div>
@@ -256,8 +272,9 @@ export default function Home() {
             </div>
           </header>
 
-          <main className="px-4 py-4 md:px-6 lg:px-8 max-w-4xl mx-auto pb-24">
+          <main className="px-4 py-4 md:px-6 lg:px-8 max-w-4xl mx-auto pb-24 space-y-8">
             <KeywordManager />
+            <ReferralDashboard />
           </main>
         </div>
         {isMobile && (
@@ -314,7 +331,7 @@ export default function Home() {
         filters={filters}
         onFiltersChange={setFilters}
         onPaperClick={handlePaperClick}
-        onBookmarkToggle={toggleBookmark}
+        onBookmarkToggle={handleToggleBookmark}
         isBookmarked={isBookmarked}
         isLoading={isLoading}
         onRefresh={refetch}
@@ -338,6 +355,13 @@ export default function Home() {
           bookmarkCount={bookmarkCount}
         />
       )}
+
+      {/* Success celebration */}
+      <SuccessCelebration
+        show={showCelebration}
+        message={celebrationMessage}
+        onClose={() => setShowCelebration(false)}
+      />
     </>
   );
 }
