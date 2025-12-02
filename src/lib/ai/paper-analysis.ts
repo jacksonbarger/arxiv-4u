@@ -1,4 +1,4 @@
-import { generateText, generateJSON, isConfigured } from './claude';
+import { generateText, generateJSON, isConfigured } from './openai';
 import type { ArxivPaper } from '@/types/arxiv';
 import type { PaperCache } from '@/types/database';
 import { getCachedPaperAnalysis, cachePaperAnalysis } from '@/lib/db';
@@ -61,7 +61,7 @@ export async function analyzePaper(paper: ArxivPaper): Promise<PaperAnalysis> {
     };
   }
 
-  // Generate analysis using Claude
+  // Generate analysis using OpenAI
   const prompt = `Analyze this AI research paper and provide business insights:
 
 **Title:** ${paper.title}
@@ -88,7 +88,7 @@ Provide a comprehensive business analysis in JSON format with the following stru
 }`;
 
   const analysis = await generateJSON<PaperAnalysis>(prompt, {
-    model: 'claude-3-5-sonnet-20241022',
+    model: 'gpt-4-turbo',
     maxTokens: 3000,
     systemPrompt: ANALYSIS_SYSTEM_PROMPT,
   });
@@ -124,7 +124,7 @@ export async function generateQuickSummary(paper: ArxivPaper): Promise<string> {
 Focus on what problem it solves and why it matters. Use plain English.`;
 
   return await generateText(prompt, {
-    model: 'claude-3-5-haiku-20241022', // Faster, cheaper
+    model: 'gpt-3.5-turbo', // Faster, cheaper
     maxTokens: 200,
   });
 }

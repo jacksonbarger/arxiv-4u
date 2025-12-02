@@ -5,6 +5,8 @@ import { useRouter } from 'next/navigation';
 import { useSession } from 'next-auth/react';
 import { useSubscription } from '@/hooks';
 import { PromoCodeInput } from '@/components/PromoCodeInput';
+import { EnterpriseContactForm } from '@/components/EnterpriseContactForm';
+import { Modal, useDisclosure } from '@heroui/react';
 
 interface PricingTier {
   id: 'free' | 'basic' | 'premium';

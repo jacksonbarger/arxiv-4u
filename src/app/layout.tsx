@@ -6,6 +6,7 @@ import { ThemeProvider } from "@/contexts/ThemeContext";
 import { ReaderModeProvider } from "@/contexts/ReaderModeContext";
 import { ToastProvider } from "@/components/ui/Toast";
 import { ReferralTracker } from "@/components/ReferralTracker";
+import { SpeedInsights } from '@vercel/speed-insights/next';
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -38,6 +39,7 @@ export default function RootLayout({
               <ToastProvider>
                 <ReferralTracker />
                 {children}
+                <SpeedInsights />
               </ToastProvider>
             </ReaderModeProvider>
           </ThemeProvider>

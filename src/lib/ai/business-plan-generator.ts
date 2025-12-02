@@ -1,4 +1,4 @@
-import { generateJSON, generateText, isConfigured } from './claude';
+import { generateJSON, generateText, isConfigured } from './openai';
 import type { ArxivPaper, CategoryMatch } from '@/types/arxiv';
 import type { BusinessPlanData } from '@/types/database';
 import { ProfitStrategy } from '@/lib/profitInsights';

@@ -23,12 +23,12 @@ export function getStripe(): Promise<Stripe | null> {
 // SUBSCRIPTION CHECKOUT
 // ========================================
 
-export async function redirectToCheckout(tier: 'basic' | 'premium') {
+export async function redirectToCheckout(tier: 'standard' | 'pro', promoCode?: string) {
   try {
     // Get price ID based on tier
-    const priceId = tier === 'basic'
-      ? process.env.NEXT_PUBLIC_STRIPE_BASIC_MONTHLY_PRICE_ID
-      : process.env.NEXT_PUBLIC_STRIPE_PREMIUM_MONTHLY_PRICE_ID;
+    const priceId = tier === 'standard'
+      ? process.env.NEXT_PUBLIC_STRIPE_STANDARD_MONTHLY_PRICE_ID
+      : process.env.NEXT_PUBLIC_STRIPE_PRO_MONTHLY_PRICE_ID;
 
     if (!priceId) {
       throw new Error(`Missing price ID for tier: ${tier}`);
@@ -40,7 +40,7 @@ export async function redirectToCheckout(tier: 'basic' | 'premium') {
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ priceId, tier }),
+      body: JSON.stringify({ priceId, tier, promoCode }),
     });
 
     if (!response.ok) {
@@ -122,9 +122,9 @@ export async function redirectToCustomerPortal() {
 // ========================================
 
 export interface SubscriptionTier {
-  id: 'free' | 'basic' | 'premium';
+  id: 'free' | 'standard' | 'pro' | 'enterprise';
   name: string;
-  price: number;
+  price: number | 'contact';
   interval: 'month' | 'year';
   features: string[];
   popular?: boolean;
@@ -139,45 +139,56 @@ export const SUBSCRIPTION_TIERS: SubscriptionTier[] = [
     interval: 'month',
     trial: false,
     features: [
-      'Browse papers',
-      'Basic filtering',
-      '10 bookmarks',
-      '3 free business plans',
-      'Email notifications',
+      '5 AI analyses per month',
+      'Basic paper discovery',
+      'Bookmark papers',
+      'Weekly digest email',
+      '$0.99 per article analysis',
     ],
   },
   {
-    id: 'basic',
-    name: 'Basic',
-    price: 9.99,
+    id: 'standard',
+    name: 'Standard',
+    price: 4.99,
     interval: 'month',
-    trial: true,
+    trial: false,
     features: [
-      'Everything in Free',
-      'Unlimited bookmarks',
+      '25 AI analyses per month',
       'Marketing insights',
-      'Commercial scores',
-      'Detailed summaries',
+      'Advanced filters',
+      'Weekly digest',
       '$0.99 per business plan',
-      '7-day free trial',
     ],
   },
   {
-    id: 'premium',
-    name: 'Premium',
-    price: 24.99,
+    id: 'pro',
+    name: 'Pro',
+    price: 9.99,
     interval: 'month',
     trial: true,
     popular: true,
     features: [
-      'Everything in Basic',
+      'Unlimited AI analyses',
       'Unlimited business plans',
-      'Market analysis',
-      'Revenue projections',
-      'Competitor analysis',
-      'PDF export',
+      'Marketing insights',
       'Priority support',
-      '7-day free trial',
+      'Early access to features',
+      'Use promo: ARXIV4FREE',
+    ],
+  },
+  {
+    id: 'enterprise',
+    name: 'Enterprise',
+    price: 'contact',
+    interval: 'month',
+    trial: false,
+    features: [
+      'Everything in Pro',
+      'Personal consulting with Zentrex',
+      'Custom business plan implementation',
+      'Dedicated account manager',
+      'Custom integrations',
+      'Contact for pricing',
     ],
   },
 ];
@@ -187,9 +198,9 @@ export function getSubscriptionTier(tierId: string): SubscriptionTier | undefine
 }
 
 export function canAccessFeature(
-  userTier: 'free' | 'basic' | 'premium',
-  requiredTier: 'free' | 'basic' | 'premium'
+  userTier: 'free' | 'standard' | 'pro' | 'enterprise',
+  requiredTier: 'free' | 'standard' | 'pro' | 'enterprise'
 ): boolean {
-  const tierHierarchy = { free: 0, basic: 1, premium: 2 };
+  const tierHierarchy = { free: 0, standard: 1, pro: 2, enterprise: 3 };
   return tierHierarchy[userTier] >= tierHierarchy[requiredTier];
 }

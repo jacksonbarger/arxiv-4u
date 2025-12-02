@@ -1,52 +1,58 @@
-import Anthropic from '@anthropic-ai/sdk';
+import OpenAI from 'openai';
 
-// Initialize Anthropic client
-const anthropic = new Anthropic({
-  apiKey: process.env.ANTHROPIC_API_KEY || '',
+// Initialize OpenAI client
+const openai = new OpenAI({
+  apiKey: process.env.OPENAI_API_KEY || '',
 });
 
 export interface Message {
-  role: 'user' | 'assistant';
+  role: 'user' | 'assistant' | 'system';
   content: string;
 }
 
 /**
- * Generate text using Claude
+ * Generate text using OpenAI
  */
 export async function generateText(
   prompt: string,
   options?: {
-    model?: 'claude-3-5-sonnet-20241022' | 'claude-3-5-haiku-20241022';
+    model?: 'gpt-4' | 'gpt-4-turbo' | 'gpt-3.5-turbo';
     maxTokens?: number;
     temperature?: number;
     systemPrompt?: string;
   }
 ): Promise<string> {
-  const model = options?.model || 'claude-3-5-sonnet-20241022';
+  const model = options?.model || 'gpt-4-turbo';
   const maxTokens = options?.maxTokens || 4000;
   const temperature = options?.temperature || 1.0;
 
-  const messages: Anthropic.MessageParam[] = [
-    {
-      role: 'user',
-      content: prompt,
-    },
-  ];
+  const messages: OpenAI.Chat.ChatCompletionMessageParam[] = [];
 
-  const response = await anthropic.messages.create({
-    model,
-    max_tokens: maxTokens,
-    temperature,
-    system: options?.systemPrompt,
-    messages,
-  });
-
-  const textContent = response.content.find((c) => c.type === 'text');
-  if (!textContent || textContent.type !== 'text') {
-    throw new Error('No text content in response');
+  if (options?.systemPrompt) {
+    messages.push({
+      role: 'system',
+      content: options.systemPrompt,
+    });
   }
 
-  return textContent.text;
+  messages.push({
+    role: 'user',
+    content: prompt,
+  });
+
+  const response = await openai.chat.completions.create({
+    model,
+    messages,
+    max_tokens: maxTokens,
+    temperature,
+  });
+
+  const content = response.choices[0]?.message?.content;
+  if (!content) {
+    throw new Error('No content in response');
+  }
+
+  return content;
 }
 
 /**
@@ -55,35 +61,43 @@ export async function generateText(
 export async function generateWithHistory(
   messages: Message[],
   options?: {
-    model?: 'claude-3-5-sonnet-20241022' | 'claude-3-5-haiku-20241022';
+    model?: 'gpt-4' | 'gpt-4-turbo' | 'gpt-3.5-turbo';
     maxTokens?: number;
     temperature?: number;
     systemPrompt?: string;
   }
 ): Promise<string> {
-  const model = options?.model || 'claude-3-5-sonnet-20241022';
+  const model = options?.model || 'gpt-4-turbo';
   const maxTokens = options?.maxTokens || 4000;
   const temperature = options?.temperature || 1.0;
 
-  const anthropicMessages: Anthropic.MessageParam[] = messages.map((msg) => ({
-    role: msg.role,
-    content: msg.content,
-  }));
+  const openaiMessages: OpenAI.Chat.ChatCompletionMessageParam[] = [];
 
-  const response = await anthropic.messages.create({
-    model,
-    max_tokens: maxTokens,
-    temperature,
-    system: options?.systemPrompt,
-    messages: anthropicMessages,
-  });
-
-  const textContent = response.content.find((c) => c.type === 'text');
-  if (!textContent || textContent.type !== 'text') {
-    throw new Error('No text content in response');
+  if (options?.systemPrompt) {
+    openaiMessages.push({
+      role: 'system',
+      content: options.systemPrompt,
+    });
   }
 
-  return textContent.text;
+  openaiMessages.push(...messages.map((msg) => ({
+    role: msg.role as 'user' | 'assistant' | 'system',
+    content: msg.content,
+  })));
+
+  const response = await openai.chat.completions.create({
+    model,
+    messages: openaiMessages,
+    max_tokens: maxTokens,
+    temperature,
+  });
+
+  const content = response.choices[0]?.message?.content;
+  if (!content) {
+    throw new Error('No content in response');
+  }
+
+  return content;
 }
 
 /**
@@ -92,7 +106,7 @@ export async function generateWithHistory(
 export async function generateJSON<T>(
   prompt: string,
   options?: {
-    model?: 'claude-3-5-sonnet-20241022' | 'claude-3-5-haiku-20241022';
+    model?: 'gpt-4' | 'gpt-4-turbo' | 'gpt-3.5-turbo';
     maxTokens?: number;
     systemPrompt?: string;
   }
@@ -104,7 +118,7 @@ export async function generateJSON<T>(
     temperature: 0.3, // Lower temperature for more consistent JSON
   });
 
-  // Extract JSON from response (in case Claude adds markdown)
+  // Extract JSON from response (in case GPT adds markdown)
   let jsonStr = response.trim();
 
   // Remove markdown code blocks if present
@@ -118,7 +132,7 @@ export async function generateJSON<T>(
     return JSON.parse(jsonStr) as T;
   } catch (error) {
     console.error('Failed to parse JSON response:', jsonStr);
-    throw new Error(`Invalid JSON response from Claude: ${error}`);
+    throw new Error(`Invalid JSON response from OpenAI: ${error}`);
   }
 }
 
@@ -134,5 +148,5 @@ export function estimateTokens(text: string): number {
  * Check if API key is configured
  */
 export function isConfigured(): boolean {
-  return !!process.env.ANTHROPIC_API_KEY && process.env.ANTHROPIC_API_KEY !== 'your_api_key_here';
+  return !!process.env.OPENAI_API_KEY && process.env.OPENAI_API_KEY !== 'your_api_key_here';
 }
