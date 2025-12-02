@@ -327,8 +327,8 @@ export function PaperDetail({
               </h2>
             </div>
 
-            {/* Show full insights for Basic/Premium users, paywall for free users */}
-            {subscription?.tier === 'basic' || subscription?.tier === 'premium' ? (
+            {/* Show full insights for Standard/Pro/Enterprise users, paywall for free users */}
+            {subscription?.tier === 'standard' || subscription?.tier === 'pro' || subscription?.tier === 'enterprise' ? (
               <MarketingInsights paper={paper} categoryMatches={categoryMatches} />
             ) : (
               <MarketingInsightsPaywall />

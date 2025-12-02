@@ -5,10 +5,10 @@ import { useToast } from '@/components/ui/Toast';
 
 interface PromoCodeInputProps {
   onPromoApplied: (discount: { type: string; value: number; code: string }) => void;
-  tier?: 'basic' | 'premium';
+  tier?: 'standard' | 'pro';
 }
 
-export function PromoCodeInput({ onPromoApplied, tier = 'basic' }: PromoCodeInputProps) {
+export function PromoCodeInput({ onPromoApplied, tier = 'standard' }: PromoCodeInputProps) {
   const [code, setCode] = useState('');
   const [isValidating, setIsValidating] = useState(false);
   const [appliedPromo, setAppliedPromo] = useState<{ code: string; discount: string } | null>(null);

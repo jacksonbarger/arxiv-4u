@@ -6,9 +6,9 @@ import { redirectToCheckout, SUBSCRIPTION_TIERS } from '@/lib/stripe/client';
 interface UpgradeModalProps {
   isOpen: boolean;
   onClose: () => void;
-  currentTier?: 'free' | 'basic' | 'premium';
+  currentTier?: 'free' | 'standard' | 'pro' | 'enterprise';
   reason?: string;
-  highlightTier?: 'basic' | 'premium';
+  highlightTier?: 'standard' | 'pro';
 }
 
 export function UpgradeModal({
@@ -16,14 +16,14 @@ export function UpgradeModal({
   onClose,
   currentTier = 'free',
   reason,
-  highlightTier = 'basic',
+  highlightTier = 'standard',
 }: UpgradeModalProps) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   if (!isOpen) return null;
 
-  const handleUpgrade = async (tier: 'basic' | 'premium') => {
+  const handleUpgrade = async (tier: 'standard' | 'pro') => {
     try {
       setLoading(true);
       setError(null);
@@ -35,8 +35,8 @@ export function UpgradeModal({
     }
   };
 
-  const basicTier = SUBSCRIPTION_TIERS.find((t) => t.id === 'basic')!;
-  const premiumTier = SUBSCRIPTION_TIERS.find((t) => t.id === 'premium')!;
+  const standardTier = SUBSCRIPTION_TIERS.find((t) => t.id === 'standard')!;
+  const proTier = SUBSCRIPTION_TIERS.find((t) => t.id === 'pro')!;
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4" style={{ backgroundColor: 'rgba(0, 0, 0, 0.5)' }}>
@@ -73,18 +73,18 @@ export function UpgradeModal({
         {/* Pricing Tiers */}
         <div className="p-8">
           <div className="grid md:grid-cols-2 gap-6">
-            {/* Basic Tier */}
+            {/* Standard Tier */}
             <div
               className={`rounded-2xl p-6 transition-all ${
-                highlightTier === 'basic' ? 'ring-2 shadow-lg' : ''
+                highlightTier === 'standard' ? 'ring-2 shadow-lg' : ''
               }`}
               style={{
-                borderColor: highlightTier === 'basic' ? '#3B82F6' : '#E2E8F0',
-                border: highlightTier === 'basic' ? 'none' : '1px solid #E2E8F0',
+                borderColor: highlightTier === 'standard' ? '#3B82F6' : '#E2E8F0',
+                border: highlightTier === 'standard' ? 'none' : '1px solid #E2E8F0',
                 ringColor: '#3B82F6',
               }}
             >
-              {highlightTier === 'basic' && (
+              {highlightTier === 'standard' && (
                 <div className="mb-4">
                   <span
                     className="px-3 py-1 rounded-full text-xs font-medium"
@@ -96,12 +96,12 @@ export function UpgradeModal({
               )}
 
               <h3 className="text-2xl font-bold mb-2" style={{ color: '#1E293B' }}>
-                {basicTier.name}
+                {standardTier.name}
               </h3>
 
               <div className="mb-4">
                 <span className="text-4xl font-bold" style={{ color: '#1E293B' }}>
-                  ${basicTier.price}
+                  ${standardTier.price}
                 </span>
                 <span style={{ color: '#64748B' }}>/month</span>
               </div>
@@ -111,19 +111,19 @@ export function UpgradeModal({
               </p>
 
               <button
-                onClick={() => handleUpgrade('basic')}
-                disabled={loading || currentTier === 'basic'}
+                onClick={() => handleUpgrade('standard')}
+                disabled={loading || currentTier === 'standard'}
                 className="w-full px-6 py-3 rounded-lg font-semibold mb-6 transition-all disabled:opacity-50"
                 style={{
-                  backgroundColor: highlightTier === 'basic' ? '#2563EB' : '#F1F5F9',
-                  color: highlightTier === 'basic' ? '#FFFFFF' : '#475569',
+                  backgroundColor: highlightTier === 'standard' ? '#2563EB' : '#F1F5F9',
+                  color: highlightTier === 'standard' ? '#FFFFFF' : '#475569',
                 }}
               >
-                {currentTier === 'basic' ? 'Current Plan' : 'Start Free Trial'}
+                {currentTier === 'standard' ? 'Current Plan' : 'Start Free Trial'}
               </button>
 
               <ul className="space-y-3">
-                {basicTier.features.map((feature, index) => (
+                {standardTier.features.map((feature, index) => (
                   <li key={index} className="flex items-start gap-2">
                     <svg className="w-5 h-5 mt-0.5 flex-shrink-0" style={{ color: '#10B981' }} fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
@@ -134,19 +134,19 @@ export function UpgradeModal({
               </ul>
             </div>
 
-            {/* Premium Tier */}
+            {/* Pro Tier */}
             <div
               className={`rounded-2xl p-6 transition-all ${
-                highlightTier === 'premium' ? 'ring-2 shadow-lg' : ''
+                highlightTier === 'pro' ? 'ring-2 shadow-lg' : ''
               }`}
               style={{
-                borderColor: highlightTier === 'premium' ? '#7C3AED' : '#E2E8F0',
-                border: highlightTier === 'premium' ? 'none' : '1px solid #E2E8F0',
+                borderColor: highlightTier === 'pro' ? '#7C3AED' : '#E2E8F0',
+                border: highlightTier === 'pro' ? 'none' : '1px solid #E2E8F0',
                 ringColor: '#7C3AED',
-                background: highlightTier === 'premium' ? 'linear-gradient(135deg, #667EEA 0%, #764BA2 100%)' : '#FFFFFF',
+                background: highlightTier === 'pro' ? 'linear-gradient(135deg, #667EEA 0%, #764BA2 100%)' : '#FFFFFF',
               }}
             >
-              {highlightTier === 'premium' && (
+              {highlightTier === 'pro' && (
                 <div className="mb-4">
                   <span
                     className="px-3 py-1 rounded-full text-xs font-medium"
@@ -159,48 +159,48 @@ export function UpgradeModal({
 
               <h3
                 className="text-2xl font-bold mb-2"
-                style={{ color: highlightTier === 'premium' ? '#FFFFFF' : '#1E293B' }}
+                style={{ color: highlightTier === 'pro' ? '#FFFFFF' : '#1E293B' }}
               >
-                {premiumTier.name}
+                {proTier.name}
               </h3>
 
               <div className="mb-4">
                 <span
                   className="text-4xl font-bold"
-                  style={{ color: highlightTier === 'premium' ? '#FFFFFF' : '#1E293B' }}
+                  style={{ color: highlightTier === 'pro' ? '#FFFFFF' : '#1E293B' }}
                 >
-                  ${premiumTier.price}
+                  ${proTier.price}
                 </span>
-                <span style={{ color: highlightTier === 'premium' ? '#E0E7FF' : '#64748B' }}>
+                <span style={{ color: highlightTier === 'pro' ? '#E0E7FF' : '#64748B' }}>
                   /month
                 </span>
               </div>
 
               <p
                 className="mb-6"
-                style={{ color: highlightTier === 'premium' ? '#E0E7FF' : '#64748B' }}
+                style={{ color: highlightTier === 'pro' ? '#E0E7FF' : '#64748B' }}
               >
                 For serious entrepreneurs and businesses
               </p>
 
               <button
-                onClick={() => handleUpgrade('premium')}
-                disabled={loading || currentTier === 'premium'}
+                onClick={() => handleUpgrade('pro')}
+                disabled={loading || currentTier === 'pro' || currentTier === 'enterprise'}
                 className="w-full px-6 py-3 rounded-lg font-semibold mb-6 transition-all disabled:opacity-50"
                 style={{
-                  backgroundColor: highlightTier === 'premium' ? '#FFFFFF' : '#F1F5F9',
-                  color: highlightTier === 'premium' ? '#7C3AED' : '#475569',
+                  backgroundColor: highlightTier === 'pro' ? '#FFFFFF' : '#F1F5F9',
+                  color: highlightTier === 'pro' ? '#7C3AED' : '#475569',
                 }}
               >
-                {currentTier === 'premium' ? 'Current Plan' : 'Start Free Trial'}
+                {currentTier === 'pro' || currentTier === 'enterprise' ? 'Current Plan' : 'Start Free Trial'}
               </button>
 
               <ul className="space-y-3">
-                {premiumTier.features.map((feature, index) => (
+                {proTier.features.map((feature, index) => (
                   <li key={index} className="flex items-start gap-2">
                     <svg
                       className="w-5 h-5 mt-0.5 flex-shrink-0"
-                      style={{ color: highlightTier === 'premium' ? '#FFFFFF' : '#10B981' }}
+                      style={{ color: highlightTier === 'pro' ? '#FFFFFF' : '#10B981' }}
                       fill="none"
                       viewBox="0 0 24 24"
                       stroke="currentColor"
@@ -209,7 +209,7 @@ export function UpgradeModal({
                     </svg>
                     <span
                       style={{
-                        color: highlightTier === 'premium' ? '#FFFFFF' : '#475569',
+                        color: highlightTier === 'pro' ? '#FFFFFF' : '#475569',
                         fontSize: '14px',
                       }}
                     >
@@ -241,7 +241,7 @@ export function UpgradeModal({
 }
 
 // Quick inline upgrade prompts for throughout the app
-export function InlineUpgradePrompt({ feature, tier = 'basic' }: { feature: string; tier?: 'basic' | 'premium' }) {
+export function InlineUpgradePrompt({ feature, tier = 'standard' }: { feature: string; tier?: 'standard' | 'pro' }) {
   const [showModal, setShowModal] = useState(false);
 
   return (
@@ -255,7 +255,7 @@ export function InlineUpgradePrompt({ feature, tier = 'basic' }: { feature: stri
           </div>
           <div className="flex-1">
             <h4 className="font-semibold mb-1" style={{ color: '#92400E' }}>
-              {tier === 'premium' ? 'Premium Feature' : 'Unlock This Feature'}
+              {tier === 'pro' ? 'Pro Feature' : 'Unlock This Feature'}
             </h4>
             <p className="text-sm mb-3" style={{ color: '#78350F' }}>
               {feature}
@@ -265,7 +265,7 @@ export function InlineUpgradePrompt({ feature, tier = 'basic' }: { feature: stri
               className="px-4 py-2 rounded-lg text-sm font-medium transition-all"
               style={{ backgroundColor: '#92400E', color: '#FFFFFF' }}
             >
-              Upgrade to {tier === 'premium' ? 'Premium' : 'Basic'}
+              Upgrade to {tier === 'pro' ? 'Pro' : 'Standard'}
             </button>
           </div>
         </div>

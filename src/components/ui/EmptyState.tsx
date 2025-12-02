@@ -12,7 +12,7 @@ interface EmptyStateProps {
     variant?: 'primary' | 'secondary';
   };
   upgradePrompt?: {
-    tier: 'basic' | 'premium';
+    tier: 'standard' | 'pro';
     benefit: string;
   };
 }
@@ -68,7 +68,7 @@ export function EmptyState({ icon, title, description, action, upgradePrompt }: 
               color: '#4A5568',
             }}
           >
-            Upgrade to {upgradePrompt.tier === 'basic' ? 'Basic' : 'Premium'} →
+            Upgrade to {upgradePrompt.tier === 'standard' ? 'Standard' : 'Pro'} →
           </button>
         )}
       </div>
@@ -100,8 +100,8 @@ export function EmptyBookmarks() {
         onClick: () => window.location.href = '/',
       }}
       upgradePrompt={{
-        tier: 'basic',
-        benefit: 'Upgrade to Basic for unlimited bookmarks and folders',
+        tier: 'standard',
+        benefit: 'Upgrade to Standard for unlimited bookmarks and folders',
       }}
     />
   );
@@ -129,8 +129,8 @@ export function EmptyBusinessPlans() {
       title="No Business Plans Yet"
       description="Generate AI-powered business plans from research papers. Your saved plans will appear here."
       upgradePrompt={{
-        tier: 'basic',
-        benefit: 'Upgrade to Basic for unlimited business plan generation',
+        tier: 'standard',
+        benefit: 'Upgrade to Standard for unlimited business plan generation',
       }}
     />
   );
@@ -143,8 +143,8 @@ export function EmptySavedSearches() {
       title="No Saved Searches"
       description="Save your favorite search queries and filters to quickly access papers you care about."
       upgradePrompt={{
-        tier: 'basic',
-        benefit: 'Upgrade to Basic for 50 saved searches with auto-updates',
+        tier: 'standard',
+        benefit: 'Upgrade to Standard for 50 saved searches with auto-updates',
       }}
     />
   );

@@ -23,7 +23,7 @@ CREATE TABLE IF NOT EXISTS users (
   verification_token_expiry TIMESTAMP WITH TIME ZONE,
 
   -- Subscription info
-  subscription_tier VARCHAR(20) DEFAULT 'free' CHECK (subscription_tier IN ('free', 'basic', 'premium')),
+  subscription_tier VARCHAR(20) DEFAULT 'free' CHECK (subscription_tier IN ('free', 'standard', 'pro', 'enterprise')),
   subscription_status VARCHAR(20) DEFAULT 'active' CHECK (subscription_status IN ('active', 'trialing', 'past_due', 'canceled', 'expired')),
   trial_ends_at TIMESTAMP WITH TIME ZONE,
   subscription_period_end TIMESTAMP WITH TIME ZONE,
@@ -61,7 +61,7 @@ CREATE TABLE IF NOT EXISTS subscriptions (
   stripe_price_id VARCHAR(255) NOT NULL,
 
   status VARCHAR(20) NOT NULL CHECK (status IN ('active', 'trialing', 'past_due', 'canceled', 'unpaid', 'incomplete')),
-  tier VARCHAR(20) NOT NULL CHECK (tier IN ('basic', 'premium')),
+  tier VARCHAR(20) NOT NULL CHECK (tier IN ('standard', 'pro', 'enterprise')),
 
   current_period_start TIMESTAMP WITH TIME ZONE NOT NULL,
   current_period_end TIMESTAMP WITH TIME ZONE NOT NULL,

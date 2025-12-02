@@ -37,8 +37,8 @@ export async function checkBusinessPlanAccess(
     };
   }
 
-  // Premium users: unlimited access (with fair use policy)
-  if (subscription_tier === 'premium') {
+  // Pro/Enterprise users: unlimited access (with fair use policy)
+  if (subscription_tier === 'pro' || subscription_tier === 'enterprise') {
     // Check fair use policy (e.g., max 100 per month)
     const fairUseLimit = 100;
     const plansThisMonth = await getBusinessPlansThisMonth(user.id);
@@ -63,15 +63,15 @@ export async function checkBusinessPlanAccess(
     };
   }
 
-  // Basic users: need to pay $0.99 per plan
-  if (subscription_tier === 'basic') {
+  // Standard users: need to pay $0.99 per plan
+  if (subscription_tier === 'standard') {
     return {
       canGenerate: false,
       reason: 'Purchase this business plan for $0.99',
       freeRemaining: free_business_plans_remaining,
       totalGenerated: business_plans_generated,
       requiresPayment: true, // Can pay $0.99
-      requiresUpgrade: false, // Or upgrade to Premium for unlimited
+      requiresUpgrade: false, // Or upgrade to Pro for unlimited
     };
   }
 
@@ -130,14 +130,14 @@ async function getBusinessPlansThisMonth(userId: string): Promise<number> {
  * Check if user can access marketing insights
  */
 export function canAccessMarketingInsights(user: User): boolean {
-  return user.subscription_tier === 'basic' || user.subscription_tier === 'premium';
+  return user.subscription_tier === 'standard' || user.subscription_tier === 'pro' || user.subscription_tier === 'enterprise';
 }
 
 /**
  * Check if user can access business plans (excluding the 3 free)
  */
 export function canAccessUnlimitedBusinessPlans(user: User): boolean {
-  return user.subscription_tier === 'premium';
+  return user.subscription_tier === 'pro' || user.subscription_tier === 'enterprise';
 }
 
 /**
@@ -148,25 +148,25 @@ export function getUpgradeCTA(user: User): {
   title: string;
   message: string;
   ctaText: string;
-  tier: 'basic' | 'premium';
+  tier: 'standard' | 'pro';
 } {
-  if (user.subscription_tier === 'premium') {
+  if (user.subscription_tier === 'pro' || user.subscription_tier === 'enterprise') {
     return {
       show: false,
       title: '',
       message: '',
       ctaText: '',
-      tier: 'premium',
+      tier: 'pro',
     };
   }
 
-  if (user.subscription_tier === 'basic') {
+  if (user.subscription_tier === 'standard') {
     return {
       show: true,
-      title: 'Upgrade to Premium',
+      title: 'Upgrade to Pro',
       message: 'Get unlimited business plan generations and advanced features',
-      ctaText: 'Upgrade to Premium - $24.99/mo',
-      tier: 'premium',
+      ctaText: 'Upgrade to Pro - $9.99/mo',
+      tier: 'pro',
     };
   }
 
@@ -174,19 +174,19 @@ export function getUpgradeCTA(user: User): {
   if (user.free_business_plans_remaining === 0) {
     return {
       show: true,
-      title: 'Unlock More Business Plans',
+      title: 'Unlock More Features',
       message: 'You\'ve used all 3 free generations. Upgrade for marketing insights and more!',
-      ctaText: 'Start Free Trial - Basic $9.99/mo',
-      tier: 'basic',
+      ctaText: 'Start Free Trial - $4.99/mo',
+      tier: 'standard',
     };
   }
 
   return {
     show: true,
-    title: 'Get More with Basic',
+    title: 'Get More with Standard',
     message: `${user.free_business_plans_remaining} free generations left. Unlock unlimited bookmarks and marketing insights!`,
     ctaText: 'Start 7-Day Free Trial',
-    tier: 'basic',
+    tier: 'standard',
   };
 }
 
@@ -205,7 +205,8 @@ export interface FeatureLimits {
 
 export function getFeatureLimits(user: User): FeatureLimits {
   switch (user.subscription_tier) {
-    case 'premium':
+    case 'enterprise':
+    case 'pro':
       return {
         bookmarkLimit: null, // unlimited
         businessPlansPerMonth: null, // unlimited (fair use)
@@ -216,7 +217,7 @@ export function getFeatureLimits(user: User): FeatureLimits {
         prioritySupport: true,
       };
 
-    case 'basic':
+    case 'standard':
       return {
         bookmarkLimit: null, // unlimited
         businessPlansPerMonth: null, // pay per plan

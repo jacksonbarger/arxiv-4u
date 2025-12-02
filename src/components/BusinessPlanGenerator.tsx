@@ -9,7 +9,7 @@ interface BusinessPlanGeneratorProps {
   paper: ArxivPaper;
   categoryMatch: CategoryMatch;
   selectedStrategy: ProfitStrategy;
-  userTier: 'free' | 'basic' | 'premium';
+  userTier: 'free' | 'standard' | 'pro' | 'enterprise';
   freeGenerationsRemaining: number;
   onComplete?: (plan: BusinessPlanData) => void;
 }
@@ -258,8 +258,8 @@ export function BusinessPlanGenerator({
           </svg>
           <div className="flex-1">
             <p className="text-sm font-medium mb-1" style={{ color: '#0C4A6E' }}>
-              {userTier === 'premium' && 'Included in Premium'}
-              {userTier === 'basic' && 'Pay $0.99 for this business plan'}
+              {(userTier === 'pro' || userTier === 'enterprise') && 'Included in Pro'}
+              {userTier === 'standard' && 'Pay $0.99 for this business plan'}
               {userTier === 'free' && freeGenerationsRemaining > 0 && `${freeGenerationsRemaining} free generation${freeGenerationsRemaining === 1 ? '' : 's'} remaining`}
               {userTier === 'free' && freeGenerationsRemaining === 0 && 'All free generations used'}
             </p>
@@ -285,7 +285,7 @@ export function BusinessPlanGenerator({
         onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#1D4ED8'}
         onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#2563EB'}
       >
-        Generate Business Plan ({userTier === 'premium' ? 'Free' : userTier === 'basic' ? '$0.99' : freeGenerationsRemaining > 0 ? 'Free' : 'Upgrade Required'})
+        Generate Business Plan ({(userTier === 'pro' || userTier === 'enterprise') ? 'Free' : userTier === 'standard' ? '$0.99' : freeGenerationsRemaining > 0 ? 'Free' : 'Upgrade Required'})
       </button>
     </div>
   );

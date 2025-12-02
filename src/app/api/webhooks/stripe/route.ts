@@ -136,7 +136,7 @@ async function handleSubscriptionCreated(subscription: Stripe.Subscription) {
 
   // Determine tier from price ID
   const priceId = subscription.items.data[0]?.price.id;
-  const tier = PRICE_TO_TIER[priceId] || 'basic';
+  const tier = PRICE_TO_TIER[priceId] || 'standard';
 
   console.log(`[Webhook] Creating ${tier} subscription for user: ${user.email}`);
 
@@ -185,7 +185,7 @@ async function handleSubscriptionUpdated(subscription: Stripe.Subscription) {
 
   // Determine tier from price ID
   const priceId = subscription.items.data[0]?.price.id;
-  const tier = PRICE_TO_TIER[priceId] || 'basic';
+  const tier = PRICE_TO_TIER[priceId] || 'standard';
 
   console.log(`[Webhook] Updating subscription for user: ${user.email}, status: ${subscription.status}`);
 

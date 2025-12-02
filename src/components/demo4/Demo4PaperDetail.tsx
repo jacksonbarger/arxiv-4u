@@ -45,7 +45,7 @@ export function Demo4PaperDetail({
             Back
           </Button>
           <div className="flex gap-2">
-            <ShareButtons url={paper.arxivUrl} title={paper.title} />
+            <ShareButtons paper={paper} variant="compact" />
             <Button
               color={isBookmarked ? "primary" : "default"}
               variant={isBookmarked ? "solid" : "flat"}

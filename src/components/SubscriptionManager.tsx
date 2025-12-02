@@ -102,7 +102,7 @@ export function SubscriptionManager() {
         <div className="flex items-center justify-between mb-3">
           <div>
             <h3 className="font-semibold text-lg" style={{ color: '#4A5568' }}>
-              {subscription?.tier === 'premium' ? 'Premium' : subscription?.tier === 'basic' ? 'Professional' : 'Explorer'} Plan
+              {subscription?.tier === 'pro' || subscription?.tier === 'enterprise' ? 'Pro' : subscription?.tier === 'standard' ? 'Standard' : 'Explorer'} Plan
             </h3>
             <div className="flex items-center gap-2 mt-1">
               <div
@@ -119,7 +119,7 @@ export function SubscriptionManager() {
           {subscription?.tier !== 'free' && (
             <div className="text-right">
               <p className="text-2xl font-bold" style={{ color: '#4A5568' }}>
-                ${subscription?.tier === 'premium' ? '39' : '12'}
+                ${subscription?.tier === 'pro' || subscription?.tier === 'enterprise' ? '9.99' : '4.99'}
               </p>
               <p className="text-xs" style={{ color: '#718096' }}>
                 per month
@@ -146,7 +146,7 @@ export function SubscriptionManager() {
                   Trial ends in {daysUntilCharge} day{daysUntilCharge !== 1 ? 's' : ''}
                 </p>
                 <p className="text-sm mt-1" style={{ color: '#92400E', opacity: 0.8 }}>
-                  You&apos;ll be charged ${subscription?.tier === 'premium' ? '39' : '12'}/month unless you cancel before {new Date(subscription.trialEnd).toLocaleDateString()}.
+                  You&apos;ll be charged ${subscription?.tier === 'pro' || subscription?.tier === 'enterprise' ? '9.99' : '4.99'}/month unless you cancel before {new Date(subscription.trialEnd).toLocaleDateString()}.
                   Cancel anytime to avoid charges.
                 </p>
               </div>

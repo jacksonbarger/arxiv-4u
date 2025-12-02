@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useSession } from 'next-auth/react';
 
 export interface SubscriptionStatus {
-  tier: 'free' | 'basic' | 'premium';
+  tier: 'free' | 'standard' | 'pro' | 'enterprise';
   freeGenerationsRemaining: number;
   totalGenerated: number;
 }

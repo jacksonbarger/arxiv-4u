@@ -1,5 +1,6 @@
 'use client';
 
+import { useState } from 'react';
 import { KeywordManager } from '../KeywordManager';
 import { SubscriptionManager } from '../SubscriptionManager';
 import { ReferralDashboard } from '../ReferralDashboard';
@@ -11,6 +12,8 @@ interface Demo4SettingsProps {
 }
 
 export function Demo4Settings({ onBack }: Demo4SettingsProps) {
+  const [isNotificationSettingsOpen, setIsNotificationSettingsOpen] = useState(true);
+
   return (
     <div className="min-h-screen bg-background">
       <div className="sticky top-0 z-50 bg-background/80 backdrop-blur-md border-b border-divider">
@@ -53,7 +56,10 @@ export function Demo4Settings({ onBack }: Demo4SettingsProps) {
           </CardHeader>
           <Divider />
           <CardBody>
-            <NotificationSettings />
+            <NotificationSettings
+              isOpen={isNotificationSettingsOpen}
+              onClose={() => setIsNotificationSettingsOpen(false)}
+            />
           </CardBody>
         </Card>
 

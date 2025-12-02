@@ -6,7 +6,7 @@ interface UsageMeterProps {
   current: number;
   limit: number;
   type: 'business-plans' | 'bookmarks' | 'searches';
-  tier: 'free' | 'basic' | 'premium';
+  tier: 'free' | 'standard' | 'pro' | 'enterprise';
 }
 
 const TYPE_LABELS = {
@@ -23,16 +23,16 @@ const TYPE_ICONS = {
 
 const UPGRADE_BENEFITS = {
   'business-plans': {
-    basic: 'Unlimited business plans',
-    premium: 'Unlimited + AI templates',
+    standard: 'Unlimited business plans',
+    pro: 'Unlimited + AI templates',
   },
   'bookmarks': {
-    basic: 'Unlimited bookmarks + folders',
-    premium: 'Unlimited + team sharing',
+    standard: 'Unlimited bookmarks + folders',
+    pro: 'Unlimited + team sharing',
   },
   'searches': {
-    basic: '50 saved searches',
-    premium: 'Unlimited searches + alerts',
+    standard: '50 saved searches',
+    pro: 'Unlimited searches + alerts',
   },
 };
 
@@ -44,10 +44,10 @@ export function UsageMeter({ current, limit, type, tier }: UsageMeterProps) {
   const isAtLimit = current >= limit;
 
   // Premium users don't see meters (unlimited)
-  if (tier === 'premium') return null;
+  if (tier === 'pro' || tier === 'enterprise') return null;
 
   // Basic users only see meters for features they don't have unlimited access to
-  if (tier === 'basic' && (type === 'business-plans' || type === 'bookmarks')) return null;
+  if (tier === 'standard' && (type === 'business-plans' || type === 'bookmarks')) return null;
 
   const getColor = () => {
     if (isAtLimit) return {
@@ -68,7 +68,7 @@ export function UsageMeter({ current, limit, type, tier }: UsageMeterProps) {
   };
 
   const colors = getColor();
-  const nextTier = tier === 'free' ? 'basic' : 'premium';
+  const nextTier = tier === 'free' ? 'standard' : 'pro';
   const benefit = UPGRADE_BENEFITS[type][nextTier];
 
   if (isAtLimit) {
@@ -103,7 +103,7 @@ export function UsageMeter({ current, limit, type, tier }: UsageMeterProps) {
                 color: '#4A5568',
               }}
             >
-              Upgrade to {nextTier === 'basic' ? 'Basic' : 'Premium'} →
+              Upgrade to {nextTier === 'standard' ? 'Standard' : 'Pro'} →
             </button>
           </div>
         </div>
@@ -167,8 +167,8 @@ export function UsageMeterCompact({ current, limit, type, tier }: UsageMeterProp
   const remaining = limit - current;
   const isAtLimit = current >= limit;
 
-  if (tier === 'premium') return null;
-  if (tier === 'basic' && (type === 'business-plans' || type === 'bookmarks')) return null;
+  if (tier === 'pro' || tier === 'enterprise') return null;
+  if (tier === 'standard' && (type === 'business-plans' || type === 'bookmarks')) return null;
 
   if (isAtLimit) {
     return (

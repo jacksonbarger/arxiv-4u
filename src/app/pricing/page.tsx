@@ -5,11 +5,9 @@ import { useRouter } from 'next/navigation';
 import { useSession } from 'next-auth/react';
 import { useSubscription } from '@/hooks';
 import { PromoCodeInput } from '@/components/PromoCodeInput';
-import { EnterpriseContactForm } from '@/components/EnterpriseContactForm';
-import { Modal, useDisclosure } from '@heroui/react';
 
 interface PricingTier {
-  id: 'free' | 'basic' | 'premium';
+  id: 'free' | 'standard' | 'pro' | 'enterprise';
   name: string;
   tagline: string;
   price: {
@@ -22,19 +20,20 @@ interface PricingTier {
   }[];
   cta: string;
   highlighted?: boolean;
+  contactSales?: boolean;
 }
 
 const TIERS: PricingTier[] = [
   {
     id: 'free',
-    name: 'Explorer',
+    name: 'Free',
     tagline: 'Discover AI research',
     price: { monthly: 0, annual: 0 },
     features: [
       {
         category: 'Discovery',
         items: [
-          '50 papers per day',
+          '5 AI analyses per month',
           'Basic category filtering',
           'Reading time estimates',
           'TL;DR summaries',
@@ -52,7 +51,7 @@ const TIERS: PricingTier[] = [
       {
         category: 'Business',
         items: [
-          '3 business plans/month',
+          '3 business plans (one-time)',
           'Marketing insights preview',
           '10 bookmarks maximum',
         ],
@@ -61,25 +60,25 @@ const TIERS: PricingTier[] = [
     cta: 'Current Plan',
   },
   {
-    id: 'basic',
-    name: 'Professional',
+    id: 'standard',
+    name: 'Standard',
     tagline: 'Turn research into revenue',
-    price: { monthly: 12, annual: 120 },
+    price: { monthly: 4.99, annual: 49.99 },
     features: [
       {
-        category: 'Unlimited Access',
+        category: 'Analyses',
         items: [
-          'Unlimited papers',
+          '25 AI analyses per month',
           'Advanced filtering',
           'Smart semantic search',
-          'Unlimited bookmarks + folders',
+          'Unlimited bookmarks',
         ],
       },
       {
         category: 'Business Intelligence',
         items: [
           'Full marketing insights',
-          'Unlimited business plans',
+          'Pay-per-plan ($0.99 each)',
           'Commercial viability scoring',
           'Market size estimates',
         ],
@@ -87,51 +86,88 @@ const TIERS: PricingTier[] = [
       {
         category: 'Productivity',
         items: [
-          'Daily email digests',
-          'Custom alerts',
-          'Export to PDF/Markdown',
+          'Weekly email digests',
           'Reading history',
+          'Export to PDF/Markdown',
+          'Priority support',
         ],
       },
     ],
-    cta: 'Start Free Trial',
+    cta: 'Start 7-Day Trial',
     highlighted: true,
   },
   {
-    id: 'premium',
-    name: 'Enterprise',
-    tagline: 'AI-powered research intelligence',
-    price: { monthly: 39, annual: 390 },
+    id: 'pro',
+    name: 'Pro',
+    tagline: 'Unlimited research power',
+    price: { monthly: 9.99, annual: 99.99 },
     features: [
       {
-        category: 'Advanced Intelligence',
+        category: 'Unlimited Access',
         items: [
+          'Unlimited AI analyses',
           'PDF deep analysis',
           'AI research assistant',
           'Trend analysis',
+        ],
+      },
+      {
+        category: 'Business Intelligence',
+        items: [
+          'Unlimited business plans',
+          'Full marketing insights',
           'Patent potential scoring',
+          'Custom reports',
         ],
       },
       {
-        category: 'Team Collaboration',
+        category: 'Premium Features',
         items: [
-          'Unlimited team members',
-          'Team workspaces',
-          'Slack/Discord integration',
-          'White-label reports',
-        ],
-      },
-      {
-        category: 'Enterprise',
-        items: [
-          'API access (1000 req/mo)',
+          'Daily email digests',
+          'Custom alerts',
           'Bulk export (CSV/JSON)',
-          'Priority support (4hr)',
-          'Custom features',
+          'Priority support (24hr)',
         ],
       },
     ],
-    cta: 'Start Free Trial',
+    cta: 'Start 7-Day Trial',
+  },
+  {
+    id: 'enterprise',
+    name: 'Enterprise',
+    tagline: 'For teams and organizations',
+    price: { monthly: 0, annual: 0 },
+    features: [
+      {
+        category: 'Team Features',
+        items: [
+          'Unlimited team members',
+          'Team workspaces',
+          'Shared bookmarks & folders',
+          'Admin dashboard',
+        ],
+      },
+      {
+        category: 'Integrations',
+        items: [
+          'Slack/Discord integration',
+          'API access (custom limits)',
+          'White-label reports',
+          'SSO/SAML support',
+        ],
+      },
+      {
+        category: 'Support',
+        items: [
+          'Dedicated account manager',
+          'Priority support (4hr)',
+          'Custom onboarding',
+          'SLA guarantee',
+        ],
+      },
+    ],
+    cta: 'Contact Sales',
+    contactSales: true,
   },
 ];
 
@@ -246,17 +282,19 @@ export default function PricingPage() {
         )}
 
         {/* Pricing Cards */}
-        <div className="grid md:grid-cols-3 gap-6 mb-12">
+        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
           {TIERS.map((tier) => {
             const isCurrentTier = currentTier === tier.id;
-            const price = billingCycle === 'monthly' ? tier.price.monthly : tier.price.annual;
-            const monthlyPrice = billingCycle === 'annual' ? tier.price.annual / 12 : price;
+            const isEnterprise = tier.contactSales;
+            const monthlyPrice = billingCycle === 'annual' && tier.price.annual > 0
+              ? tier.price.annual / 12
+              : tier.price.monthly;
 
             return (
               <div
                 key={tier.id}
-                className={`relative rounded-3xl p-8 text-left transition-all ${
-                  tier.highlighted ? 'shadow-2xl scale-105' : 'shadow-lg'
+                className={`relative rounded-3xl p-6 text-left transition-all ${
+                  tier.highlighted ? 'shadow-2xl scale-105 z-10' : 'shadow-lg'
                 }`}
                 style={{
                   backgroundColor: '#FFFFFF',
@@ -281,57 +319,67 @@ export default function PricingPage() {
                   </div>
                 )}
 
-                <h3 className="text-2xl font-bold mb-2" style={{ color: '#4A5568' }}>
+                <h3 className="text-xl font-bold mb-2" style={{ color: '#4A5568' }}>
                   {tier.name}
                 </h3>
-                <p className="text-sm mb-6" style={{ color: '#718096' }}>
+                <p className="text-sm mb-4" style={{ color: '#718096' }}>
                   {tier.tagline}
                 </p>
 
-                <div className="mb-6">
-                  <div className="flex items-baseline gap-2">
-                    <span className="text-4xl font-bold" style={{ color: '#4A5568' }}>
-                      ${Math.floor(monthlyPrice)}
-                    </span>
-                    <span className="text-sm" style={{ color: '#718096' }}>
-                      /month
-                    </span>
-                  </div>
-                  {billingCycle === 'annual' && tier.price.annual > 0 && (
-                    <p className="text-xs mt-1" style={{ color: '#718096' }}>
-                      Billed ${tier.price.annual} annually
-                    </p>
+                <div className="mb-4">
+                  {isEnterprise ? (
+                    <div className="flex items-baseline gap-2">
+                      <span className="text-3xl font-bold" style={{ color: '#4A5568' }}>
+                        Custom
+                      </span>
+                    </div>
+                  ) : (
+                    <>
+                      <div className="flex items-baseline gap-1">
+                        <span className="text-3xl font-bold" style={{ color: '#4A5568' }}>
+                          ${monthlyPrice.toFixed(monthlyPrice % 1 === 0 ? 0 : 2)}
+                        </span>
+                        <span className="text-sm" style={{ color: '#718096' }}>
+                          /mo
+                        </span>
+                      </div>
+                      {billingCycle === 'annual' && tier.price.annual > 0 && (
+                        <p className="text-xs mt-1" style={{ color: '#718096' }}>
+                          ${tier.price.annual.toFixed(2)}/year
+                        </p>
+                      )}
+                    </>
                   )}
                 </div>
 
                 <button
                   onClick={() => handleSelectPlan(tier.id)}
-                  disabled={isCurrentTier}
+                  disabled={isCurrentTier && tier.id === 'free'}
                   className={`w-full py-3 rounded-xl font-semibold transition-all ${
-                    !isCurrentTier && 'hover:scale-105 active:scale-95'
+                    !(isCurrentTier && tier.id === 'free') && 'hover:scale-105 active:scale-95'
                   }`}
                   style={{
-                    backgroundColor: isCurrentTier ? '#E2E8F0' : tier.highlighted ? '#9EDCE1' : '#EFECE6',
-                    color: isCurrentTier ? '#718096' : '#4A5568',
-                    cursor: isCurrentTier ? 'not-allowed' : 'pointer',
+                    backgroundColor: isCurrentTier && tier.id === 'free' ? '#E2E8F0' : tier.highlighted ? '#9EDCE1' : '#EFECE6',
+                    color: isCurrentTier && tier.id === 'free' ? '#718096' : '#4A5568',
+                    cursor: isCurrentTier && tier.id === 'free' ? 'not-allowed' : 'pointer',
                   }}
                 >
-                  {isCurrentTier ? tier.cta : tier.id === 'free' ? 'Get Started' : tier.cta}
+                  {isCurrentTier && tier.id === 'free' ? 'Current Plan' : tier.cta}
                 </button>
 
-                <div className="mt-8 space-y-6">
+                <div className="mt-6 space-y-4">
                   {tier.features.map((category, idx) => (
                     <div key={idx}>
-                      <h4 className="text-xs font-semibold uppercase tracking-wide mb-3" style={{ color: '#9EDCE1' }}>
+                      <h4 className="text-xs font-semibold uppercase tracking-wide mb-2" style={{ color: '#9EDCE1' }}>
                         {category.category}
                       </h4>
-                      <ul className="space-y-2">
+                      <ul className="space-y-1.5">
                         {category.items.map((item, itemIdx) => (
                           <li key={itemIdx} className="flex items-start gap-2 text-sm" style={{ color: '#4A5568' }}>
-                            <svg className="w-5 h-5 flex-shrink-0 mt-0.5" style={{ color: '#9EDCE1' }} fill="currentColor" viewBox="0 0 20 20">
+                            <svg className="w-4 h-4 flex-shrink-0 mt-0.5" style={{ color: '#9EDCE1' }} fill="currentColor" viewBox="0 0 20 20">
                               <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
                             </svg>
-                            <span>{item}</span>
+                            <span className="text-xs">{item}</span>
                           </li>
                         ))}
                       </ul>
@@ -347,13 +395,13 @@ export default function PricingPage() {
         <div className="grid md:grid-cols-3 gap-8 max-w-4xl mx-auto mb-12">
           <div className="text-center">
             <div className="text-3xl mb-2">✅</div>
-            <h3 className="font-semibold mb-1" style={{ color: '#4A5568' }}>14-Day Free Trial</h3>
-            <p className="text-sm" style={{ color: '#718096' }}>No credit card required</p>
+            <h3 className="font-semibold mb-1" style={{ color: '#4A5568' }}>7-Day Free Trial</h3>
+            <p className="text-sm" style={{ color: '#718096' }}>Try all features risk-free</p>
           </div>
           <div className="text-center">
             <div className="text-3xl mb-2">🔒</div>
             <h3 className="font-semibold mb-1" style={{ color: '#4A5568' }}>Cancel Anytime</h3>
-            <p className="text-sm" style={{ color: '#718096' }}>30-day money-back guarantee</p>
+            <p className="text-sm" style={{ color: '#718096' }}>No long-term commitment</p>
           </div>
           <div className="text-center">
             <div className="text-3xl mb-2">⚡</div>
@@ -370,12 +418,12 @@ export default function PricingPage() {
           <div className="space-y-4">
             {[
               {
-                q: 'Can I try Premium before paying?',
-                a: 'Yes! All paid plans come with a 14-day free trial. No credit card required to start.',
+                q: 'Can I try paid plans before committing?',
+                a: 'Yes! Standard and Pro plans include a 7-day free trial. You can cancel anytime during the trial.',
               },
               {
                 q: 'What payment methods do you accept?',
-                a: 'We accept all major credit cards, debit cards, and PayPal through our secure Stripe integration.',
+                a: 'We accept all major credit cards and debit cards through our secure Stripe integration.',
               },
               {
                 q: 'Can I cancel my subscription?',
@@ -384,6 +432,10 @@ export default function PricingPage() {
               {
                 q: 'What happens to my data if I downgrade?',
                 a: 'All your bookmarks, searches, and history are preserved. You\'ll just lose access to premium features.',
+              },
+              {
+                q: 'What\'s the difference between Standard and Pro?',
+                a: 'Standard gives you 25 analyses/month and marketing insights. Pro gives you unlimited analyses and business plan generation.',
               },
             ].map((faq, idx) => (
               <details
