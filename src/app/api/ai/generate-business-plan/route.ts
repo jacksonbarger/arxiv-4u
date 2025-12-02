@@ -85,7 +85,7 @@ export async function POST(req: NextRequest) {
     let amountPaid = 0;
     let stripePaymentIntentId: string | undefined;
 
-    if (user.subscription_tier === 'premium') {
+    if (user.subscription_tier === 'pro' || user.subscription_tier === 'enterprise') {
       purchaseType = 'subscription';
     } else if (paymentIntentId) {
       purchaseType = 'one_time';

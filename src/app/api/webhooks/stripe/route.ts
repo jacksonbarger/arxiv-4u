@@ -148,10 +148,14 @@ async function handleSubscriptionCreated(subscription: Stripe.Subscription) {
     stripePriceId: priceId,
     status: subscription.status,
     tier,
-    currentPeriodStart: new Date(subscription.current_period_start * 1000),
-    currentPeriodEnd: new Date(subscription.current_period_end * 1000),
-    trialStart: subscription.trial_start ? new Date(subscription.trial_start * 1000) : undefined,
-    trialEnd: subscription.trial_end ? new Date(subscription.trial_end * 1000) : undefined,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    currentPeriodStart: new Date((subscription as any).current_period_start * 1000),
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    currentPeriodEnd: new Date((subscription as any).current_period_end * 1000),
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    trialStart: (subscription as any).trial_start ? new Date((subscription as any).trial_start * 1000) : undefined,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    trialEnd: (subscription as any).trial_end ? new Date((subscription as any).trial_end * 1000) : undefined,
   });
 
   // Update user subscription status
@@ -160,7 +164,8 @@ async function handleSubscriptionCreated(subscription: Stripe.Subscription) {
     subscriptionStatus: subscription.status === 'trialing' ? 'trialing' : 'active',
     stripeCustomerId: customerId,
     stripeSubscriptionId: subscription.id,
-    subscriptionPeriodEnd: new Date(subscription.current_period_end * 1000),
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    subscriptionPeriodEnd: new Date((subscription as any).current_period_end * 1000),
   });
 }
 
@@ -188,7 +193,8 @@ async function handleSubscriptionUpdated(subscription: Stripe.Subscription) {
   await updateSubscriptionStatus(
     subscription.id,
     subscription.status,
-    new Date(subscription.current_period_end * 1000)
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    new Date((subscription as any).current_period_end * 1000)
   );
 
   // Update user subscription status
@@ -203,7 +209,8 @@ async function handleSubscriptionUpdated(subscription: Stripe.Subscription) {
     subscriptionStatus,
     stripeCustomerId: typeof subscription.customer === 'string' ? subscription.customer : subscription.customer.id,
     stripeSubscriptionId: subscription.id,
-    subscriptionPeriodEnd: new Date(subscription.current_period_end * 1000),
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    subscriptionPeriodEnd: new Date((subscription as any).current_period_end * 1000),
   });
 
   // Notify user if subscription was canceled
@@ -212,7 +219,8 @@ async function handleSubscriptionUpdated(subscription: Stripe.Subscription) {
       userId,
       type: 'subscription_canceled',
       title: 'Subscription Canceled',
-      message: `Your subscription will remain active until ${new Date(subscription.current_period_end * 1000).toLocaleDateString()}.`,
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      message: `Your subscription will remain active until ${new Date((subscription as any).current_period_end * 1000).toLocaleDateString()}.`,
     });
   }
 }

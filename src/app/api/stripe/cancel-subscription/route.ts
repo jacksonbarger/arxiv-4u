@@ -4,7 +4,7 @@ import { getUserByEmail } from '@/lib/db';
 import Stripe from 'stripe';
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-  apiVersion: '2024-12-18.acacia',
+  apiVersion: '2025-11-17.clover',
 });
 
 export async function POST() {
@@ -21,13 +21,13 @@ export async function POST() {
       return NextResponse.json({ error: 'User not found' }, { status: 404 });
     }
 
-    if (!user.stripeCustomerId) {
+    if (!user.stripe_customer_id) {
       return NextResponse.json({ error: 'No active subscription' }, { status: 400 });
     }
 
     // Get customer's subscriptions
     const subscriptions = await stripe.subscriptions.list({
-      customer: user.stripeCustomerId,
+      customer: user.stripe_customer_id,
       status: 'active',
       limit: 1,
     });
@@ -35,7 +35,7 @@ export async function POST() {
     if (subscriptions.data.length === 0) {
       // Also check for trialing subscriptions
       const trialingSubscriptions = await stripe.subscriptions.list({
-        customer: user.stripeCustomerId,
+        customer: user.stripe_customer_id,
         status: 'trialing',
         limit: 1,
       });
@@ -56,15 +56,16 @@ export async function POST() {
     }
 
     // Cancel active subscription at period end
-    const subscription = subscriptions.data[0];
-    const updatedSubscription = await stripe.subscriptions.update(subscription.id, {
+    const subscription: Stripe.Subscription = subscriptions.data[0];
+    await stripe.subscriptions.update(subscription.id, {
       cancel_at_period_end: true,
     });
 
     return NextResponse.json({
       success: true,
       message: 'Subscription will be canceled at the end of the billing period',
-      cancelAt: new Date(updatedSubscription.current_period_end * 1000).toISOString(),
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      cancelAt: new Date((subscription as any).current_period_end * 1000).toISOString(),
     });
 
   } catch (error) {

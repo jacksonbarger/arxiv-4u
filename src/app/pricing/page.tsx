@@ -241,7 +241,7 @@ export default function PricingPage() {
         {/* Promo Code Input */}
         {session && (
           <div className="max-w-md mx-auto mb-8">
-            <PromoCodeInput onPromoApplied={setAppliedPromoCode} />
+            <PromoCodeInput onPromoApplied={(discount) => setAppliedPromoCode(discount.code)} />
           </div>
         )}
 

@@ -27,11 +27,11 @@ interface Demo4HomeFeedProps {
   bookmarkCount: number;
 }
 
-const ALL_CATEGORIES: TopicCategory[] = [
+const ALL_CATEGORIES = [
   'Computer Vision', 'Natural Language Processing', 'Machine Learning',
   'Robotics', 'Reinforcement Learning', 'Generative AI',
   'Multimodal Learning', 'Speech Recognition', 'AI Ethics & Safety', 'Theoretical ML',
-];
+] as const;
 
 export function Demo4HomeFeed({
   papers,
@@ -156,7 +156,7 @@ export function Demo4HomeFeed({
         <div className="container mx-auto px-6 py-4">
           <div className="flex gap-2 overflow-x-auto pb-2">
             {ALL_CATEGORIES.map((category) => {
-              const isSelected = filters.selectedCategories.includes(category);
+              const isSelected = filters.selectedCategories.includes(category as any);
               const count = categoryDistribution[category] || 0;
 
               return (

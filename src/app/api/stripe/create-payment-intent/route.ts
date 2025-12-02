@@ -41,7 +41,7 @@ export async function POST(req: NextRequest) {
     const paymentIntent = await createPaymentIntent({
       userId: user.id,
       paperId,
-      amount: PRICE_AMOUNTS.ONE_TIME_BUSINESS_PLAN,
+      amount: PRICE_AMOUNTS.PAY_PER_ARTICLE,
       customerId,
     });
 

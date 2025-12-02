@@ -1,6 +1,6 @@
 // Database types for Vercel Postgres
 
-export type SubscriptionTier = 'free' | 'basic' | 'premium';
+export type SubscriptionTier = 'free' | 'standard' | 'pro' | 'enterprise';
 
 export type SubscriptionStatus =
   | 'active'
@@ -59,7 +59,7 @@ export interface Subscription {
   stripe_price_id: string;
 
   status: SubscriptionStatus;
-  tier: 'basic' | 'premium';
+  tier: 'free' | 'standard' | 'pro' | 'enterprise';
 
   current_period_start: string;
   current_period_end: string;

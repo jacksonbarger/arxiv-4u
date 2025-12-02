@@ -130,7 +130,7 @@ export async function createSubscription(data: {
   stripeCustomerId: string;
   stripePriceId: string;
   status: string;
-  tier: 'basic' | 'premium';
+  tier: 'free' | 'standard' | 'pro' | 'enterprise';
   currentPeriodStart: Date;
   currentPeriodEnd: Date;
   trialStart?: Date;
