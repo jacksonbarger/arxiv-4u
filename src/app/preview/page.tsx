@@ -223,7 +223,7 @@ export default function PreviewPage() {
                   </h3>
                   <InlineUpgradePrompt
                     feature="Access unlimited business plans and advanced market analysis"
-                    tier="premium"
+                    tier="pro"
                   />
                 </div>
 
@@ -233,7 +233,7 @@ export default function PreviewPage() {
                   </h3>
                   <InlineUpgradePrompt
                     feature="Unlock marketing insights for all papers"
-                    tier="basic"
+                    tier="standard"
                   />
                 </div>
 
