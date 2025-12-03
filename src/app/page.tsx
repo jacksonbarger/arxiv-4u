@@ -5,7 +5,7 @@ import { ArxivPaper } from '@/types/arxiv';
 import { FilterState, defaultFilters } from '@/components/FilterPanel';
 import { usePapers } from '@/lib/usePapers';
 import { useOnboarding, useBookmarks, useIsMobile } from '@/hooks';
-import { BottomNav, NavItem, FilterDrawer } from '@/components/ui';
+import { BottomNav, NavItem, FilterDrawer, Header, Footer } from '@/components/ui';
 import { OnboardingScreen } from '@/components/OnboardingScreen';
 import { HomeFeed } from '@/components/HomeFeed';
 import { PaperDetail } from '@/components/PaperDetail';
@@ -292,7 +292,9 @@ export default function Home() {
 
   // Home feed (default)
   return (
-    <>
+    <div className="min-h-screen flex flex-col" style={{ backgroundColor: '#F8FAFC' }}>
+      <Header />
+
       {/* Error toast - dismissible */}
       {error && (
         <div className="fixed bottom-24 left-4 right-4 z-40 md:left-auto md:right-4 md:w-96 md:bottom-4">
@@ -364,6 +366,8 @@ export default function Home() {
         message={celebrationMessage}
         onClose={() => setShowCelebration(false)}
       />
-    </>
+
+      <Footer />
+    </div>
   );
 }

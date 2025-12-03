@@ -1,13 +1,8 @@
 'use client';
 
-import { useState } from 'react';
 import { ArxivPaper, CategoryMatch, TopicCategory } from '@/types/arxiv';
 import { SearchBar } from './ui/SearchBar';
 import { CategoryPills } from './ui/CategoryPills';
-import { UserMenu } from './ui/UserMenu';
-import { NotificationBell } from './ui/NotificationBell';
-import { NotificationPanel } from './ui/NotificationPanel';
-import { ThemeToggle } from './ui/ThemeToggle';
 import { FeaturedPaperCard, FeaturedPaperCardSkeleton } from './FeaturedPaperCard';
 import { RecommendationCard, RecommendationCardSkeleton } from './RecommendationCard';
 import { FilterState } from './FilterPanel';
@@ -40,7 +35,6 @@ export function HomeFeed({
   onRefresh,
   onFilterDrawerOpen,
 }: HomeFeedProps) {
-  const [isNotificationPanelOpen, setIsNotificationPanelOpen] = useState(false);
   const featuredPaper = papers[0];
   const recommendedPapers = papers.slice(1);
 
@@ -52,61 +46,37 @@ export function HomeFeed({
   };
 
   return (
-    <div className="min-h-screen" style={{ backgroundColor: '#F5F3EF' }}>
-      {/* Header */}
-      <header className="sticky top-0 z-30 backdrop-blur-lg" style={{ backgroundColor: 'rgba(245, 243, 239, 0.9)' }}>
-        <div className="px-4 pt-4 pb-2 md:px-6 lg:px-8 max-w-4xl mx-auto">
-          {/* Top bar */}
-          <div className="flex items-center justify-between mb-4">
-            {/* Location / Title */}
-            <div className="flex items-center gap-2">
-              <div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{ backgroundColor: '#9EDCE1' }}>
-                <svg
-                  className="w-5 h-5"
-                  style={{ color: '#4A5568' }}
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"
-                  />
-                </svg>
-              </div>
-              <div>
-                <h1 className="text-lg font-bold" style={{ color: '#4A5568' }}>
-                  Arxiv-4U
-                </h1>
-                <p className="text-xs" style={{ color: '#718096' }}>AI/ML Papers</p>
-              </div>
-            </div>
+    <div className="flex-1" style={{ backgroundColor: '#F8FAFC' }}>
+      {/* Hero Section */}
+      <section className="py-12 px-4" style={{ backgroundColor: '#FFFFFF' }}>
+        <div className="container mx-auto max-w-4xl text-center">
+          <h1 className="text-4xl md:text-5xl font-bold mb-4" style={{ color: '#0F172A' }}>
+            Discover AI Research
+          </h1>
+          <p className="text-lg mb-8" style={{ color: '#64748B' }}>
+            Turn cutting-edge AI/ML papers into profitable products and business strategies.
+          </p>
 
-            {/* Actions */}
-            <div className="flex items-center gap-2 relative">
-              <ThemeToggle />
-              <UserMenu />
-              <NotificationBell
-                onOpenPanel={() => setIsNotificationPanelOpen(!isNotificationPanelOpen)}
-                isOpen={isNotificationPanelOpen}
-              />
-              <NotificationPanel
-                isOpen={isNotificationPanelOpen}
-                onClose={() => setIsNotificationPanelOpen(false)}
-              />
-              <button
-                onClick={onRefresh}
-                disabled={isLoading}
-                className="p-2 rounded-full transition-colors disabled:opacity-50"
-                style={{ backgroundColor: 'transparent' }}
-                onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#EFECE6'}
-                onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
-              >
+          {/* Search bar */}
+          <div className="max-w-2xl mx-auto mb-6">
+            <SearchBar
+              value={filters.searchQuery}
+              onChange={(value) => onFiltersChange({ ...filters, searchQuery: value })}
+              placeholder="Search for papers, topics, or authors..."
+            />
+          </div>
+
+          {/* Action buttons */}
+          <div className="flex items-center justify-center gap-3">
+            <button
+              onClick={onRefresh}
+              disabled={isLoading}
+              className="px-4 py-2 rounded-lg text-sm font-medium transition-all hover:scale-105 disabled:opacity-50"
+              style={{ backgroundColor: '#F1F5F9', color: '#475569' }}
+            >
+              <span className="flex items-center gap-2">
                 <svg
-                  className={`w-5 h-5 ${isLoading ? 'animate-spin' : ''}`}
-                  style={{ color: '#718096' }}
+                  className={`w-4 h-4 ${isLoading ? 'animate-spin' : ''}`}
                   fill="none"
                   viewBox="0 0 24 24"
                   stroke="currentColor"
@@ -118,57 +88,46 @@ export function HomeFeed({
                     d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
                   />
                 </svg>
-              </button>
-              <button
-                onClick={onFilterDrawerOpen}
-                className="p-2 rounded-full transition-colors relative"
-                style={{ backgroundColor: 'transparent' }}
-                onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#EFECE6'}
-                onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
-              >
-                <svg
-                  className="w-5 h-5"
-                  style={{ color: '#718096' }}
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"
-                  />
+                Refresh
+              </span>
+            </button>
+            <button
+              onClick={onFilterDrawerOpen}
+              className="px-4 py-2 rounded-lg text-sm font-medium transition-all hover:scale-105 relative"
+              style={{ backgroundColor: '#F1F5F9', color: '#475569' }}
+            >
+              <span className="flex items-center gap-2">
+                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
                 </svg>
+                Filters
                 {(filters.selectedCategories.length > 0 || filters.minRelevanceScore > 0) && (
-                  <span className="absolute top-1 right-1 w-2 h-2 rounded-full" style={{ backgroundColor: '#9EDCE1' }} />
+                  <span className="absolute -top-1 -right-1 w-3 h-3 rounded-full" style={{ backgroundColor: '#9EDCE1' }} />
                 )}
-              </button>
-            </div>
+              </span>
+            </button>
           </div>
-
-          {/* Search bar */}
-          <SearchBar
-            value={filters.searchQuery}
-            onChange={(value) => onFiltersChange({ ...filters, searchQuery: value })}
-            placeholder="Find interesting papers..."
-          />
         </div>
+      </section>
 
-        {/* Category pills */}
-        <div className="px-4 md:px-6 lg:px-8 max-w-4xl mx-auto">
+      {/* Category pills */}
+      <section className="border-b" style={{ backgroundColor: '#FFFFFF', borderColor: '#E2E8F0' }}>
+        <div className="container mx-auto max-w-4xl px-4">
           <CategoryPills
             selectedCategories={filters.selectedCategories}
             onToggleCategory={toggleCategory}
             categoryDistribution={categoryDistribution}
           />
         </div>
-      </header>
+      </section>
 
       {/* Main content */}
-      <main className="px-4 py-4 md:px-6 lg:px-8 max-w-4xl mx-auto pb-24">
+      <main className="container mx-auto max-w-4xl px-4 py-8 pb-24">
         {/* Featured paper */}
-        <section className="mb-6">
+        <section className="mb-8">
+          <h2 className="text-xl font-bold mb-4" style={{ color: '#0F172A' }}>
+            Featured Research
+          </h2>
           {isLoading ? (
             <FeaturedPaperCardSkeleton />
           ) : featuredPaper ? (
@@ -180,39 +139,44 @@ export function HomeFeed({
               isBookmarked={isBookmarked(featuredPaper.id)}
             />
           ) : (
-            <div className="aspect-[4/3] md:aspect-[16/9] rounded-3xl flex items-center justify-center" style={{ backgroundColor: '#EFECE6' }}>
-              <p style={{ color: '#718096' }}>No papers found</p>
+            <div
+              className="aspect-[4/3] md:aspect-[16/9] rounded-2xl flex items-center justify-center"
+              style={{ backgroundColor: '#FFFFFF', border: '1px solid #E2E8F0' }}
+            >
+              <p style={{ color: '#64748B' }}>No papers found</p>
             </div>
           )}
         </section>
 
-        {/* Recommendations section */}
+        {/* Recent Papers section */}
         <section>
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-lg font-semibold" style={{ color: '#4A5568' }}>
-              Recommendations
+            <h2 className="text-xl font-bold" style={{ color: '#0F172A' }}>
+              Recent Papers
             </h2>
-            <span className="text-sm" style={{ color: '#718096' }}>
+            <span
+              className="px-3 py-1 rounded-full text-sm font-medium"
+              style={{ backgroundColor: '#F1F5F9', color: '#475569' }}
+            >
               {papers.length} papers
             </span>
           </div>
 
-          <div className="space-y-3 stagger-children">
+          <div className="grid gap-4">
             {isLoading ? (
               Array.from({ length: 5 }).map((_, i) => (
                 <RecommendationCardSkeleton key={i} />
               ))
             ) : recommendedPapers.length > 0 ? (
               recommendedPapers.map((paper) => (
-                <div key={paper.id} className="smooth-hover">
-                  <RecommendationCard
-                    paper={paper}
-                    categoryMatches={categoryMatchesMap.get(paper.id)}
-                    onClick={() => onPaperClick(paper)}
-                    onBookmarkClick={() => onBookmarkToggle(paper.id)}
-                    isBookmarked={isBookmarked(paper.id)}
-                  />
-                </div>
+                <RecommendationCard
+                  key={paper.id}
+                  paper={paper}
+                  categoryMatches={categoryMatchesMap.get(paper.id)}
+                  onClick={() => onPaperClick(paper)}
+                  onBookmarkClick={() => onBookmarkToggle(paper.id)}
+                  isBookmarked={isBookmarked(paper.id)}
+                />
               ))
             ) : (
               <EmptySearchResults />

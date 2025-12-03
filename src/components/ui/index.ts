@@ -4,3 +4,5 @@ export { SearchBar } from './SearchBar';
 export { BottomNav } from './BottomNav';
 export type { NavItem } from './BottomNav';
 export { FilterDrawer } from './FilterDrawer';
+export { Header } from './Header';
+export { Footer } from './Footer';
