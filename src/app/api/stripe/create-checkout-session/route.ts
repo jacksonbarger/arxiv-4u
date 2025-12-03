@@ -4,13 +4,28 @@ import { createCheckoutSession, getOrCreateStripeCustomer } from '@/lib/stripe';
 import { TIER_TO_PRICE } from '@/lib/stripe/config';
 import { getUserByEmail } from '@/lib/db';
 
+// Helper to get base URL from request
+function getBaseUrl(req: NextRequest): string {
+  // Try to get from request headers first (works in production)
+  const host = req.headers.get('host');
+  const protocol = req.headers.get('x-forwarded-proto') || 'https';
+
+  if (host) {
+    return `${protocol}://${host}`;
+  }
+
+  // Fallback to environment variable or localhost
+  return process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3001';
+}
+
 // GET handler for redirect-based checkout (from pricing page)
 export async function GET(req: NextRequest) {
   try {
+    const baseUrl = getBaseUrl(req);
+
     // Check authentication
     const session = await auth();
     if (!session?.user?.email) {
-      const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3001';
       return NextResponse.redirect(new URL('/login?callbackUrl=/pricing', baseUrl));
     }
 
@@ -19,8 +34,6 @@ export async function GET(req: NextRequest) {
     const tier = searchParams.get('tier');
     const billing = searchParams.get('billing') || 'monthly';
     // Note: promoCode from query param is not used - Stripe handles promo codes in checkout
-
-    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3001';
 
     // Handle free tier or missing tier
     if (!tier || tier === 'free') {
@@ -66,7 +79,7 @@ export async function GET(req: NextRequest) {
     return NextResponse.redirect(new URL('/pricing?error=checkout_failed', baseUrl));
   } catch (error) {
     console.error('Error creating checkout session (GET):', error);
-    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3001';
+    const baseUrl = getBaseUrl(req);
     return NextResponse.redirect(new URL('/pricing?error=checkout_error', baseUrl));
   }
 }
@@ -107,7 +120,7 @@ export async function POST(req: NextRequest) {
     const customerId = await getOrCreateStripeCustomer(user);
 
     // Create checkout session
-    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3001';
+    const baseUrl = getBaseUrl(req);
     const checkoutSession = await createCheckoutSession({
       userId: user.id,
       userEmail: user.email,
