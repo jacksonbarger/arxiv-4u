@@ -8,7 +8,7 @@ import { useSubscription } from '@/hooks';
 export function SubscriptionManager() {
   const { data: session } = useSession();
   const router = useRouter();
-  const { subscription, isLoading } = useSubscription();
+  const { subscription, loading: isLoading } = useSubscription();
   const [canceling, setCanceling] = useState(false);
   const [showCancelConfirm, setShowCancelConfirm] = useState(false);
 
@@ -146,7 +146,7 @@ export function SubscriptionManager() {
                   Trial ends in {daysUntilCharge} day{daysUntilCharge !== 1 ? 's' : ''}
                 </p>
                 <p className="text-sm mt-1" style={{ color: '#92400E', opacity: 0.8 }}>
-                  You&apos;ll be charged ${subscription?.tier === 'pro' || subscription?.tier === 'enterprise' ? '9.99' : '4.99'}/month unless you cancel before {new Date(subscription.trialEnd).toLocaleDateString()}.
+                  You&apos;ll be charged ${subscription?.tier === 'pro' || subscription?.tier === 'enterprise' ? '9.99' : '4.99'}/month unless you cancel before {new Date(subscription.trialEnd!).toLocaleDateString()}.
                   Cancel anytime to avoid charges.
                 </p>
               </div>

@@ -46,7 +46,7 @@ export async function createUser(data: {
       ${data.username},
       ${data.passwordHash},
       ${data.verificationToken || null},
-      ${data.verificationTokenExpiry || null}
+      ${data.verificationTokenExpiry?.toISOString() || null}
     )
     RETURNING *
   `;
@@ -70,7 +70,7 @@ export async function updateUserSubscription(
       subscription_status = ${data.subscriptionStatus},
       stripe_customer_id = ${data.stripeCustomerId || null},
       stripe_subscription_id = ${data.stripeSubscriptionId || null},
-      subscription_period_end = ${data.subscriptionPeriodEnd || null}
+      subscription_period_end = ${data.subscriptionPeriodEnd?.toISOString() || null}
     WHERE id = ${userId}
     RETURNING *
   `;
@@ -156,10 +156,10 @@ export async function createSubscription(data: {
       ${data.stripePriceId},
       ${data.status},
       ${data.tier},
-      ${data.currentPeriodStart},
-      ${data.currentPeriodEnd},
-      ${data.trialStart || null},
-      ${data.trialEnd || null}
+      ${data.currentPeriodStart.toISOString()},
+      ${data.currentPeriodEnd.toISOString()},
+      ${data.trialStart?.toISOString() || null},
+      ${data.trialEnd?.toISOString() || null}
     )
     RETURNING *
   `;
@@ -171,14 +171,25 @@ export async function updateSubscriptionStatus(
   status: string,
   currentPeriodEnd?: Date
 ): Promise<Subscription> {
-  const result = await sql<Subscription>`
-    UPDATE subscriptions
-    SET
-      status = ${status},
-      current_period_end = ${currentPeriodEnd || sql`current_period_end`}
-    WHERE stripe_subscription_id = ${stripeSubscriptionId}
-    RETURNING *
-  `;
+  let result;
+  if (currentPeriodEnd) {
+    result = await sql<Subscription>`
+      UPDATE subscriptions
+      SET
+        status = ${status},
+        current_period_end = ${currentPeriodEnd.toISOString()}
+      WHERE stripe_subscription_id = ${stripeSubscriptionId}
+      RETURNING *
+    `;
+  } else {
+    result = await sql<Subscription>`
+      UPDATE subscriptions
+      SET
+        status = ${status}
+      WHERE stripe_subscription_id = ${stripeSubscriptionId}
+      RETURNING *
+    `;
+  }
   return result.rows[0];
 }
 
@@ -316,14 +327,25 @@ export async function updateOneTimePurchaseStatus(
   status: string,
   businessPlanId?: string
 ): Promise<OneTimePurchase> {
-  const result = await sql<OneTimePurchase>`
-    UPDATE one_time_purchases
-    SET
-      status = ${status},
-      business_plan_id = ${businessPlanId || sql`business_plan_id`}
-    WHERE stripe_payment_intent_id = ${paymentIntentId}
-    RETURNING *
-  `;
+  let result;
+  if (businessPlanId) {
+    result = await sql<OneTimePurchase>`
+      UPDATE one_time_purchases
+      SET
+        status = ${status},
+        business_plan_id = ${businessPlanId}
+      WHERE stripe_payment_intent_id = ${paymentIntentId}
+      RETURNING *
+    `;
+  } else {
+    result = await sql<OneTimePurchase>`
+      UPDATE one_time_purchases
+      SET
+        status = ${status}
+      WHERE stripe_payment_intent_id = ${paymentIntentId}
+      RETURNING *
+    `;
+  }
   return result.rows[0];
 }
 

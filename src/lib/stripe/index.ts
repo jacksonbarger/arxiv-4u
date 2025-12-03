@@ -207,10 +207,10 @@ export async function getDefaultPaymentMethod(customerId: string) {
 
 export async function getUpcomingInvoice(customerId: string) {
   try {
-    return await stripe.invoices.retrieveUpcoming({
+    return await stripe.invoices.createPreview({
       customer: customerId,
     });
-  } catch (error) {
+  } catch {
     // No upcoming invoice
     return null;
   }

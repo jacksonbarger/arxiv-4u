@@ -5,6 +5,9 @@ export interface SubscriptionStatus {
   tier: 'free' | 'standard' | 'pro' | 'enterprise';
   freeGenerationsRemaining: number;
   totalGenerated: number;
+  status?: 'active' | 'trialing' | 'canceled' | 'past_due' | null;
+  trialEnd?: string | null;
+  currentPeriodEnd?: string | null;
 }
 
 export function useSubscription() {

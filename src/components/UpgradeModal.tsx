@@ -81,7 +81,7 @@ export function UpgradeModal({
               style={{
                 borderColor: highlightTier === 'standard' ? '#3B82F6' : '#E2E8F0',
                 border: highlightTier === 'standard' ? 'none' : '1px solid #E2E8F0',
-                ringColor: '#3B82F6',
+                // Ring color applied via Tailwind ring-2 class
               }}
             >
               {highlightTier === 'standard' && (
@@ -142,7 +142,6 @@ export function UpgradeModal({
               style={{
                 borderColor: highlightTier === 'pro' ? '#7C3AED' : '#E2E8F0',
                 border: highlightTier === 'pro' ? 'none' : '1px solid #E2E8F0',
-                ringColor: '#7C3AED',
                 background: highlightTier === 'pro' ? 'linear-gradient(135deg, #667EEA 0%, #764BA2 100%)' : '#FFFFFF',
               }}
             >

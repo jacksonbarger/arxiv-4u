@@ -7,6 +7,8 @@ export interface ProfitStrategy {
   estimatedRevenue: string;
   timeToMarket: string;
   difficulty: 'beginner' | 'intermediate' | 'advanced';
+  quickWins?: string[];
+  resources?: string[];
 }
 
 export interface ProfitInsights {

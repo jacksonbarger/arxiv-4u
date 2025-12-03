@@ -318,7 +318,7 @@ export default function PreviewPage() {
         isOpen={showUpgradeModal}
         onClose={() => setShowUpgradeModal(false)}
         currentTier="free"
-        highlightTier="premium"
+        highlightTier="pro"
         reason="See the beautiful pricing modal in action"
       />
     </div>

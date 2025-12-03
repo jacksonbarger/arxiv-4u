@@ -256,7 +256,7 @@ export function MarketingInsightsPaywall() {
           isOpen={showUpgradeModal}
           onClose={() => setShowUpgradeModal(false)}
           currentTier="free"
-          highlightTier="basic"
+          highlightTier="standard"
           reason="Unlock marketing insights to see monetization strategies for every paper"
         />
       )}
