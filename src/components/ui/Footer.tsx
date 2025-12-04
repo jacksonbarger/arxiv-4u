@@ -5,7 +5,7 @@ import Image from 'next/image';
 
 export function Footer() {
   return (
-    <footer className="border-t" style={{ backgroundColor: '#FFFFFF', borderColor: '#E2E8F0' }}>
+    <footer className="border-t bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-700">
       <div className="container mx-auto px-4 py-12">
         <div className="grid gap-8 md:grid-cols-4">
           {/* Brand */}
@@ -19,22 +19,21 @@ export function Footer() {
                 className="h-9 w-auto"
               />
             </Link>
-            <p className="text-sm" style={{ color: '#64748B' }}>
+            <p className="text-sm text-slate-500 dark:text-slate-400">
               Turn AI research papers into profitable products and businesses.
             </p>
           </div>
 
           {/* Navigation */}
           <div>
-            <h3 className="font-semibold mb-4" style={{ color: '#1E293B' }}>
+            <h3 className="font-semibold mb-4 text-slate-800 dark:text-slate-200">
               Navigation
             </h3>
             <ul className="space-y-2">
               <li>
                 <Link
                   href="/"
-                  className="text-sm transition-colors hover:underline"
-                  style={{ color: '#64748B' }}
+                  className="text-sm transition-colors hover:underline text-slate-500 dark:text-slate-400"
                 >
                   Feed
                 </Link>
@@ -42,8 +41,7 @@ export function Footer() {
               <li>
                 <Link
                   href="/pricing"
-                  className="text-sm transition-colors hover:underline"
-                  style={{ color: '#64748B' }}
+                  className="text-sm transition-colors hover:underline text-slate-500 dark:text-slate-400"
                 >
                   Pricing
                 </Link>
@@ -51,8 +49,7 @@ export function Footer() {
               <li>
                 <Link
                   href="/demo4"
-                  className="text-sm transition-colors hover:underline"
-                  style={{ color: '#64748B' }}
+                  className="text-sm transition-colors hover:underline text-slate-500 dark:text-slate-400"
                 >
                   Demo
                 </Link>
@@ -62,7 +59,7 @@ export function Footer() {
 
           {/* Data Sources */}
           <div>
-            <h3 className="font-semibold mb-4" style={{ color: '#1E293B' }}>
+            <h3 className="font-semibold mb-4 text-slate-800 dark:text-slate-200">
               Data Sources
             </h3>
             <ul className="space-y-2">
@@ -71,8 +68,7 @@ export function Footer() {
                   href="https://arxiv.org"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-sm transition-colors hover:underline"
-                  style={{ color: '#64748B' }}
+                  className="text-sm transition-colors hover:underline text-slate-500 dark:text-slate-400"
                 >
                   arXiv.org
                 </a>
@@ -82,8 +78,7 @@ export function Footer() {
                   href="https://www.semanticscholar.org"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-sm transition-colors hover:underline"
-                  style={{ color: '#64748B' }}
+                  className="text-sm transition-colors hover:underline text-slate-500 dark:text-slate-400"
                 >
                   Semantic Scholar
                 </a>
@@ -93,15 +88,14 @@ export function Footer() {
 
           {/* Legal */}
           <div>
-            <h3 className="font-semibold mb-4" style={{ color: '#1E293B' }}>
+            <h3 className="font-semibold mb-4 text-slate-800 dark:text-slate-200">
               Legal
             </h3>
             <ul className="space-y-2">
               <li>
                 <Link
                   href="/privacy"
-                  className="text-sm transition-colors hover:underline"
-                  style={{ color: '#64748B' }}
+                  className="text-sm transition-colors hover:underline text-slate-500 dark:text-slate-400"
                 >
                   Privacy Policy
                 </Link>
@@ -109,8 +103,7 @@ export function Footer() {
               <li>
                 <Link
                   href="/terms"
-                  className="text-sm transition-colors hover:underline"
-                  style={{ color: '#64748B' }}
+                  className="text-sm transition-colors hover:underline text-slate-500 dark:text-slate-400"
                 >
                   Terms of Service
                 </Link>
@@ -120,19 +113,18 @@ export function Footer() {
         </div>
 
         {/* Bottom bar */}
-        <div className="mt-12 pt-8 border-t" style={{ borderColor: '#E2E8F0' }}>
+        <div className="mt-12 pt-8 border-t border-gray-200 dark:border-gray-700">
           <div className="flex flex-col md:flex-row items-center justify-between gap-4">
-            <p className="text-sm" style={{ color: '#94A3B8' }}>
+            <p className="text-sm text-slate-400 dark:text-slate-500">
               &copy; {new Date().getFullYear()} Arxiv-4U. All rights reserved.
             </p>
-            <p className="text-sm" style={{ color: '#94A3B8' }}>
+            <p className="text-sm text-slate-400 dark:text-slate-500">
               Built by{' '}
               <a
                 href="https://zentrex.io"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="hover:underline"
-                style={{ color: '#64748B' }}
+                className="hover:underline text-slate-500 dark:text-slate-400"
               >
                 Zentrex
               </a>
