@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useSession } from 'next-auth/react';
+import { useTheme } from '@/contexts/ThemeContext';
 
 interface NotificationBellProps {
   onOpenPanel: () => void;
@@ -11,6 +12,8 @@ interface NotificationBellProps {
 export function NotificationBell({ onOpenPanel, isOpen }: NotificationBellProps) {
   const { data: session } = useSession();
   const [unreadCount, setUnreadCount] = useState(0);
+  const { themeDefinition } = useTheme();
+  const colors = themeDefinition.colors;
 
   useEffect(() => {
     if (!session?.user) return;
@@ -45,9 +48,9 @@ export function NotificationBell({ onOpenPanel, isOpen }: NotificationBellProps)
     <button
       onClick={onOpenPanel}
       className="relative p-2 rounded-full transition-colors"
-      style={{ backgroundColor: isOpen ? '#EFECE6' : 'transparent' }}
+      style={{ backgroundColor: isOpen ? colors.backgroundSecondary : 'transparent' }}
       onMouseEnter={(e) => {
-        if (!isOpen) e.currentTarget.style.backgroundColor = '#EFECE6';
+        if (!isOpen) e.currentTarget.style.backgroundColor = colors.backgroundSecondary;
       }}
       onMouseLeave={(e) => {
         if (!isOpen) e.currentTarget.style.backgroundColor = 'transparent';
@@ -55,7 +58,7 @@ export function NotificationBell({ onOpenPanel, isOpen }: NotificationBellProps)
     >
       <svg
         className="w-5 h-5"
-        style={{ color: '#718096' }}
+        style={{ color: colors.foregroundMuted }}
         fill="none"
         viewBox="0 0 24 24"
         stroke="currentColor"
@@ -70,7 +73,7 @@ export function NotificationBell({ onOpenPanel, isOpen }: NotificationBellProps)
       {unreadCount > 0 && (
         <span
           className="absolute -top-0.5 -right-0.5 flex items-center justify-center min-w-[18px] h-[18px] text-xs font-bold rounded-full px-1"
-          style={{ backgroundColor: '#9EDCE1', color: '#FFFFFF' }}
+          style={{ backgroundColor: colors.primary, color: colors.primaryForeground }}
         >
           {unreadCount > 99 ? '99+' : unreadCount}
         </span>

@@ -1,8 +1,9 @@
 import OpenAI from 'openai';
 
-// Initialize OpenAI client
+// Initialize PredictionGuard client (OpenAI-compatible API)
 const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY || '',
+  apiKey: process.env.PREDICTIONGUARD_API_KEY || '',
+  baseURL: process.env.PREDICTIONGUARD_URL ? `${process.env.PREDICTIONGUARD_URL}/v1` : 'https://globalpath.predictionguard.com/v1',
 });
 
 export interface Message {
@@ -10,19 +11,23 @@ export interface Message {
   content: string;
 }
 
+// PredictionGuard supported models
+type PredictionGuardModel = 'Hermes-3-Llama-3.1-8B' | 'Hermes-3-Llama-3.1-70B' | 'llava-1.5-7b-hf' | 'Neural-Chat-7B';
+
 /**
- * Generate text using OpenAI
+ * Generate text using PredictionGuard (OpenAI-compatible)
  */
 export async function generateText(
   prompt: string,
   options?: {
-    model?: 'gpt-4' | 'gpt-4-turbo' | 'gpt-3.5-turbo';
+    model?: PredictionGuardModel | string;
     maxTokens?: number;
     temperature?: number;
     systemPrompt?: string;
   }
 ): Promise<string> {
-  const model = options?.model || 'gpt-4-turbo';
+  // Use Hermes-3-Llama-3.1-70B as the default high-quality model
+  const model = options?.model || 'Hermes-3-Llama-3.1-70B';
   const maxTokens = options?.maxTokens || 4000;
   const temperature = options?.temperature || 1.0;
 
@@ -61,13 +66,13 @@ export async function generateText(
 export async function generateWithHistory(
   messages: Message[],
   options?: {
-    model?: 'gpt-4' | 'gpt-4-turbo' | 'gpt-3.5-turbo';
+    model?: PredictionGuardModel | string;
     maxTokens?: number;
     temperature?: number;
     systemPrompt?: string;
   }
 ): Promise<string> {
-  const model = options?.model || 'gpt-4-turbo';
+  const model = options?.model || 'Hermes-3-Llama-3.1-70B';
   const maxTokens = options?.maxTokens || 4000;
   const temperature = options?.temperature || 1.0;
 
@@ -106,7 +111,7 @@ export async function generateWithHistory(
 export async function generateJSON<T>(
   prompt: string,
   options?: {
-    model?: 'gpt-4' | 'gpt-4-turbo' | 'gpt-3.5-turbo';
+    model?: PredictionGuardModel | string;
     maxTokens?: number;
     systemPrompt?: string;
   }
@@ -132,7 +137,7 @@ export async function generateJSON<T>(
     return JSON.parse(jsonStr) as T;
   } catch (error) {
     console.error('Failed to parse JSON response:', jsonStr);
-    throw new Error(`Invalid JSON response from OpenAI: ${error}`);
+    throw new Error(`Invalid JSON response from PredictionGuard: ${error}`);
   }
 }
 
@@ -145,8 +150,8 @@ export function estimateTokens(text: string): number {
 }
 
 /**
- * Check if API key is configured
+ * Check if PredictionGuard API key is configured
  */
 export function isConfigured(): boolean {
-  return !!process.env.OPENAI_API_KEY && process.env.OPENAI_API_KEY !== 'your_api_key_here';
+  return !!process.env.PREDICTIONGUARD_API_KEY && process.env.PREDICTIONGUARD_API_KEY.length > 0;
 }

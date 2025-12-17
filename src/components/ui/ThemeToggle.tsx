@@ -3,7 +3,8 @@
 import { useTheme } from '@/contexts/ThemeContext';
 
 export function ThemeToggle() {
-  const { theme, toggleTheme } = useTheme();
+  const { theme, toggleTheme, themeDefinition } = useTheme();
+  const colors = themeDefinition.colors;
 
   return (
     <button
@@ -12,7 +13,7 @@ export function ThemeToggle() {
       style={{
         backgroundColor: 'transparent',
       }}
-      onMouseEnter={(e) => e.currentTarget.style.backgroundColor = theme === 'dark' ? '#2D3748' : '#EFECE6'}
+      onMouseEnter={(e) => e.currentTarget.style.backgroundColor = colors.muted}
       onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
       aria-label={`Switch to ${theme === 'light' ? 'dark' : 'light'} mode`}
       title={`Switch to ${theme === 'light' ? 'dark' : 'light'} mode`}
@@ -21,7 +22,7 @@ export function ThemeToggle() {
         // Moon icon for dark mode
         <svg
           className="w-5 h-5 transition-transform duration-300 hover:rotate-12"
-          style={{ color: '#718096' }}
+          style={{ color: colors.foregroundMuted }}
           fill="none"
           viewBox="0 0 24 24"
           stroke="currentColor"
@@ -37,7 +38,7 @@ export function ThemeToggle() {
         // Sun icon for light mode
         <svg
           className="w-5 h-5 transition-transform duration-300 hover:rotate-90"
-          style={{ color: '#FDB813' }}
+          style={{ color: colors.accent }}
           fill="none"
           viewBox="0 0 24 24"
           stroke="currentColor"

@@ -147,45 +147,6 @@
   --sidebar-ring: oklch(0.556 0 0);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root:not(.light) {
-    /* Auto dark mode if user hasn't set preference */
-    --background: #0a0a0a;
-    --background-secondary: #1a1a1a;
-    --foreground: #E2E8F0;
-    --foreground-muted: #A0AEC0;
-    --card-bg: #1a1a1a;
-    --card-border: #2D3748;
-  }
-}
-
-/* Override Tailwind zinc colors with Sandy Beach palette in light mode */
-@media (prefers-color-scheme: light) {
-  .bg-zinc-50 {
-    background-color: var(--background) !important;
-  }
-  .bg-zinc-100 {
-    background-color: var(--background-secondary) !important;
-  }
-  .dark\:bg-zinc-950 {
-    background-color: var(--background) !important;
-  }
-  .bg-white {
-    background-color: var(--card-bg) !important;
-  }
-  .border-zinc-100,
-  .border-zinc-200 {
-    border-color: var(--card-border) !important;
-  }
-  .text-zinc-900 {
-    color: var(--foreground) !important;
-  }
-  .text-zinc-500,
-  .text-zinc-600 {
-    color: var(--foreground-muted) !important;
-  }
-}
-
 /* Hide scrollbar for horizontal scroll containers */
 .scrollbar-hide {
   -ms-overflow-style: none;

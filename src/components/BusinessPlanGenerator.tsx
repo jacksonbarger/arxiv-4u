@@ -4,6 +4,16 @@ import { useState } from 'react';
 import { ArxivPaper, CategoryMatch } from '@/types/arxiv';
 import { ProfitStrategy } from '@/lib/profitInsights';
 import { BusinessPlanData } from '@/types/database';
+import { loadStripe } from '@stripe/stripe-js';
+import {
+  Elements,
+  PaymentElement,
+  useStripe,
+  useElements,
+} from '@stripe/react-stripe-js';
+
+// Initialize Stripe outside component to avoid re-creating on each render
+const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY || '');
 
 interface BusinessPlanGeneratorProps {
   paper: ArxivPaper;
@@ -12,6 +22,7 @@ interface BusinessPlanGeneratorProps {
   userTier: 'free' | 'standard' | 'pro' | 'enterprise';
   freeGenerationsRemaining: number;
   onComplete?: (plan: BusinessPlanData) => void;
+  onUpgradeClick?: () => void;
 }
 
 export function BusinessPlanGenerator({
@@ -21,8 +32,9 @@ export function BusinessPlanGenerator({
   userTier,
   freeGenerationsRemaining,
   onComplete,
+  onUpgradeClick,
 }: BusinessPlanGeneratorProps) {
-  const [step, setStep] = useState<'form' | 'generating' | 'complete'>('form');
+  const [step, setStep] = useState<'form' | 'payment' | 'generating' | 'complete'>('form');
   const [userInputs, setUserInputs] = useState({
     budget: '',
     timeline: '',
@@ -33,8 +45,36 @@ export function BusinessPlanGenerator({
   const [generatedPlan, setGeneratedPlan] = useState<BusinessPlanData | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [progress, setProgress] = useState(0);
+  const [clientSecret, setClientSecret] = useState<string | null>(null);
+  const [paymentIntentId, setPaymentIntentId] = useState<string | null>(null);
 
-  const handleGenerate = async () => {
+  // Create payment intent when entering payment step
+  const initiatePayment = async () => {
+    try {
+      setError(null);
+      const response = await fetch('/api/stripe/create-payment-intent', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ paperId: paper.id }),
+      });
+
+      if (!response.ok) {
+        const data = await response.json();
+        throw new Error(data.error || 'Failed to initiate payment');
+      }
+
+      const data = await response.json();
+      setClientSecret(data.clientSecret);
+      setPaymentIntentId(data.paymentIntentId);
+      setStep('payment');
+    } catch (err) {
+      console.error('Error initiating payment:', err);
+      setError(err instanceof Error ? err.message : 'Failed to initiate payment');
+    }
+  };
+
+  // Generate business plan (with optional payment intent)
+  const handleGenerate = async (paidPaymentIntentId?: string) => {
     try {
       setStep('generating');
       setError(null);
@@ -55,6 +95,7 @@ export function BusinessPlanGenerator({
           categoryMatch,
           selectedStrategy,
           userInputs,
+          paymentIntentId: paidPaymentIntentId,
         }),
       });
 
@@ -63,9 +104,12 @@ export function BusinessPlanGenerator({
       if (!response.ok) {
         const errorData = await response.json();
 
-        // Handle payment required
+        // Handle payment required - show payment modal for standard users
         if (response.status === 402) {
-          // Show payment modal
+          if (userTier === 'standard' || (userTier === 'free' && freeGenerationsRemaining === 0)) {
+            await initiatePayment();
+            return;
+          }
           setError('payment_required');
           setStep('form');
           return;
@@ -94,6 +138,12 @@ export function BusinessPlanGenerator({
       setError(err instanceof Error ? err.message : 'An error occurred');
       setStep('form');
     }
+  };
+
+  // Handle successful payment
+  const onPaymentSuccess = (confirmedPaymentIntentId: string) => {
+    setPaymentIntentId(confirmedPaymentIntentId);
+    handleGenerate(confirmedPaymentIntentId);
   };
 
   if (step === 'generating') {
@@ -149,6 +199,49 @@ export function BusinessPlanGenerator({
             </div>
           </div>
         </div>
+      </div>
+    );
+  }
+
+  if (step === 'payment' && clientSecret) {
+    return (
+      <div className="max-w-md mx-auto">
+        <div className="mb-6 text-center">
+          <div className="w-16 h-16 rounded-full mx-auto mb-4 flex items-center justify-center" style={{ backgroundColor: '#DBEAFE' }}>
+            <svg className="w-8 h-8" style={{ color: '#2563EB' }} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
+            </svg>
+          </div>
+          <h3 className="text-xl font-bold mb-2" style={{ color: '#1E293B' }}>
+            Complete Payment
+          </h3>
+          <p className="text-sm mb-4" style={{ color: '#64748B' }}>
+            One-time payment of <strong>$0.99</strong> for this business plan
+          </p>
+        </div>
+
+        <Elements
+          stripe={stripePromise}
+          options={{
+            clientSecret,
+            appearance: {
+              theme: 'stripe',
+              variables: {
+                colorPrimary: '#2563EB',
+                borderRadius: '8px',
+              },
+            },
+          }}
+        >
+          <PaymentForm
+            onSuccess={onPaymentSuccess}
+            onCancel={() => {
+              setStep('form');
+              setClientSecret(null);
+              setPaymentIntentId(null);
+            }}
+          />
+        </Elements>
       </div>
     );
   }
@@ -277,17 +370,138 @@ export function BusinessPlanGenerator({
         </div>
       )}
 
+      {/* Upgrade Required Message */}
+      {error === 'upgrade_required' && (
+        <div className="rounded-xl p-4 mb-6" style={{ backgroundColor: '#FEF3C7', border: '1px solid #FCD34D' }}>
+          <p className="text-sm mb-3" style={{ color: '#92400E' }}>
+            You&apos;ve used all your free business plan generations. Upgrade to continue!
+          </p>
+          {onUpgradeClick && (
+            <button
+              onClick={onUpgradeClick}
+              className="px-4 py-2 rounded-lg text-sm font-medium transition-all"
+              style={{ backgroundColor: '#F59E0B', color: '#FFFFFF' }}
+            >
+              View Upgrade Options
+            </button>
+          )}
+        </div>
+      )}
+
       {/* Generate Button */}
       <button
-        onClick={handleGenerate}
-        className="w-full px-6 py-4 rounded-lg font-semibold text-lg transition-all hover:shadow-lg"
+        onClick={() => handleGenerate()}
+        disabled={userTier === 'free' && freeGenerationsRemaining === 0 && !onUpgradeClick}
+        className="w-full px-6 py-4 rounded-lg font-semibold text-lg transition-all hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
         style={{ backgroundColor: '#2563EB', color: '#FFFFFF' }}
-        onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#1D4ED8'}
-        onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#2563EB'}
+        onMouseEnter={(e) => {
+          if (!e.currentTarget.disabled) e.currentTarget.style.backgroundColor = '#1D4ED8';
+        }}
+        onMouseLeave={(e) => {
+          if (!e.currentTarget.disabled) e.currentTarget.style.backgroundColor = '#2563EB';
+        }}
       >
-        Generate Business Plan ({(userTier === 'pro' || userTier === 'enterprise') ? 'Free' : userTier === 'standard' ? '$0.99' : freeGenerationsRemaining > 0 ? 'Free' : 'Upgrade Required'})
+        {(userTier === 'pro' || userTier === 'enterprise')
+          ? 'Generate Business Plan (Included)'
+          : userTier === 'standard'
+            ? 'Generate Business Plan ($0.99)'
+            : freeGenerationsRemaining > 0
+              ? 'Generate Business Plan (Free)'
+              : 'Upgrade to Generate'}
       </button>
     </div>
+  );
+}
+
+// ========================================
+// PAYMENT FORM COMPONENT (Stripe Elements)
+// ========================================
+
+interface PaymentFormProps {
+  onSuccess: (paymentIntentId: string) => void;
+  onCancel: () => void;
+}
+
+function PaymentForm({ onSuccess, onCancel }: PaymentFormProps) {
+  const stripe = useStripe();
+  const elements = useElements();
+  const [isProcessing, setIsProcessing] = useState(false);
+  const [paymentError, setPaymentError] = useState<string | null>(null);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    if (!stripe || !elements) {
+      return;
+    }
+
+    setIsProcessing(true);
+    setPaymentError(null);
+
+    try {
+      const { error, paymentIntent } = await stripe.confirmPayment({
+        elements,
+        confirmParams: {
+          return_url: window.location.href, // Not used with redirect: 'if_required'
+        },
+        redirect: 'if_required',
+      });
+
+      if (error) {
+        setPaymentError(error.message || 'Payment failed. Please try again.');
+        setIsProcessing(false);
+        return;
+      }
+
+      if (paymentIntent && paymentIntent.status === 'succeeded') {
+        onSuccess(paymentIntent.id);
+      } else {
+        setPaymentError('Payment was not completed. Please try again.');
+        setIsProcessing(false);
+      }
+    } catch (err) {
+      console.error('Payment error:', err);
+      setPaymentError('An unexpected error occurred. Please try again.');
+      setIsProcessing(false);
+    }
+  };
+
+  return (
+    <form onSubmit={handleSubmit}>
+      <div className="mb-6">
+        <PaymentElement />
+      </div>
+
+      {paymentError && (
+        <div className="rounded-lg p-3 mb-4" style={{ backgroundColor: '#FEE2E2', border: '1px solid #FCA5A5' }}>
+          <p className="text-sm" style={{ color: '#991B1B' }}>{paymentError}</p>
+        </div>
+      )}
+
+      <div className="flex gap-3">
+        <button
+          type="button"
+          onClick={onCancel}
+          disabled={isProcessing}
+          className="flex-1 px-4 py-3 rounded-lg font-medium transition-all disabled:opacity-50"
+          style={{ backgroundColor: '#F1F5F9', color: '#475569' }}
+        >
+          Cancel
+        </button>
+        <button
+          type="submit"
+          disabled={!stripe || isProcessing}
+          className="flex-1 px-4 py-3 rounded-lg font-medium transition-all disabled:opacity-50"
+          style={{ backgroundColor: '#2563EB', color: '#FFFFFF' }}
+        >
+          {isProcessing ? 'Processing...' : 'Pay $0.99'}
+        </button>
+      </div>
+
+      <p className="text-xs text-center mt-4" style={{ color: '#94A3B8' }}>
+        Secure payment powered by Stripe
+      </p>
+    </form>
   );
 }
 

@@ -3,46 +3,32 @@ import { createUser } from '@/lib/auth';
 import { Resend } from 'resend';
 import { getVerificationEmailHtml, getVerificationEmailText } from '@/lib/email-templates';
 import crypto from 'crypto';
+import {
+  applyRateLimit,
+  signupSchema,
+  validateRequestBody,
+  logAuthSuccess,
+  logAuthFailure,
+  getClientInfo,
+} from '@/lib/security';
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
 export async function POST(request: NextRequest) {
   try {
-    const { email, username, password } = await request.json();
-
-    // Validate input
-    if (!email || !username || !password) {
-      return NextResponse.json(
-        { error: 'Email, username, and password are required' },
-        { status: 400 }
-      );
+    // Apply strict rate limiting for signup (3 attempts per minute)
+    const rateLimitResponse = await applyRateLimit(request, 'auth:signup');
+    if (rateLimitResponse) {
+      return rateLimitResponse;
     }
 
-    // Validate email format
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email)) {
-      return NextResponse.json(
-        { error: 'Invalid email format' },
-        { status: 400 }
-      );
+    // Validate input with Zod schema
+    const validation = await validateRequestBody(request.clone(), signupSchema);
+    if (!validation.success) {
+      return validation.response;
     }
 
-    // Validate username (alphanumeric, 3-20 chars)
-    const usernameRegex = /^[a-zA-Z0-9_]{3,20}$/;
-    if (!usernameRegex.test(username)) {
-      return NextResponse.json(
-        { error: 'Username must be 3-20 characters (letters, numbers, underscores)' },
-        { status: 400 }
-      );
-    }
-
-    // Validate password (min 6 chars)
-    if (password.length < 6) {
-      return NextResponse.json(
-        { error: 'Password must be at least 6 characters' },
-        { status: 400 }
-      );
-    }
+    const { email, username, password } = validation.data;
 
     // Generate verification token
     const verificationToken = crypto.randomBytes(32).toString('hex');
@@ -52,6 +38,9 @@ export async function POST(request: NextRequest) {
     const user = await createUser(email, username, password, verificationToken, verificationTokenExpiry);
 
     if (!user) {
+      // Log failed signup attempt (duplicate user)
+      await logAuthFailure(request, 'auth:signup', email, 'Email or username already exists');
+
       return NextResponse.json(
         { error: 'Email or username already exists' },
         { status: 409 }
@@ -74,6 +63,9 @@ export async function POST(request: NextRequest) {
       // Don't fail signup if email fails - user can request resend
     }
 
+    // Log successful signup
+    await logAuthSuccess(request, 'auth:signup', user.id, email);
+
     return NextResponse.json({
       success: true,
       message: 'Account created! Please check your email to verify your account.',
@@ -85,6 +77,21 @@ export async function POST(request: NextRequest) {
     });
   } catch (error) {
     console.error('Signup error:', error);
+
+    // Log signup error
+    try {
+      const body = await request.clone().json().catch(() => ({}));
+      const email = body.email || 'unknown';
+      await logAuthFailure(
+        request,
+        'auth:signup',
+        email,
+        error instanceof Error ? error.message : 'Unknown error'
+      );
+    } catch {
+      // Ignore audit log errors
+    }
+
     return NextResponse.json(
       { error: error instanceof Error ? error.message : 'Signup failed' },
       { status: 500 }

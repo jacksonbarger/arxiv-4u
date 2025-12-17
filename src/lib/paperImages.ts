@@ -9,6 +9,16 @@ export const CATEGORY_GRADIENTS: Record<TopicCategory, string> = {
   'comfyui': 'from-green-500 via-emerald-500 to-teal-500',
   'runpod': 'from-blue-500 via-cyan-500 to-teal-500',
   'market-opportunity': 'from-amber-500 via-orange-500 to-red-500',
+  'nlp': 'from-sky-500 via-blue-500 to-indigo-500',
+  'llm': 'from-purple-500 via-violet-500 to-indigo-500',
+  'rag': 'from-teal-500 via-cyan-500 to-blue-500',
+  'multimodal': 'from-rose-500 via-pink-500 to-fuchsia-500',
+  'robotics': 'from-gray-500 via-slate-500 to-zinc-500',
+  'rl': 'from-emerald-500 via-green-500 to-lime-500',
+  'transformers': 'from-fuchsia-500 via-purple-500 to-violet-500',
+  'safety': 'from-red-500 via-rose-500 to-pink-500',
+  'science': 'from-blue-500 via-indigo-500 to-purple-500',
+  'efficiency': 'from-lime-500 via-green-500 to-emerald-500',
   'other': 'from-slate-500 via-gray-500 to-zinc-500',
 };
 
@@ -71,6 +81,56 @@ export const CATEGORY_IMAGES: Record<TopicCategory, string[]> = {
     'https://images.unsplash.com/photo-1554224155-6726b3ff858f?w=800&q=80',
     'https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?w=800&q=80',
     'https://images.unsplash.com/photo-1590283603385-17ffb3a7f29f?w=800&q=80',
+  ],
+  'nlp': [
+    'https://images.unsplash.com/photo-1456513080510-7bf3a84b82f8?w=800&q=80',
+    'https://images.unsplash.com/photo-1471107340929-a87cd0f5b5f3?w=800&q=80',
+    'https://images.unsplash.com/photo-1453733190371-0a9bedd82893?w=800&q=80',
+  ],
+  'llm': [
+    'https://images.unsplash.com/photo-1620712943543-bcc4688e7485?w=800&q=80',
+    'https://images.unsplash.com/photo-1677442136019-21780ecad995?w=800&q=80',
+    'https://images.unsplash.com/photo-1655720033654-a4239dd42d10?w=800&q=80',
+  ],
+  'rag': [
+    'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=800&q=80',
+    'https://images.unsplash.com/photo-1481627834876-b7833e8f5570?w=800&q=80',
+    'https://images.unsplash.com/photo-1456324504439-367cee3b3c32?w=800&q=80',
+  ],
+  'multimodal': [
+    'https://images.unsplash.com/photo-1633613286991-611fe299c4be?w=800&q=80',
+    'https://images.unsplash.com/photo-1561736778-92e52a7769ef?w=800&q=80',
+    'https://images.unsplash.com/photo-1618005198919-d3d4b5a92ead?w=800&q=80',
+  ],
+  'robotics': [
+    'https://images.unsplash.com/photo-1485827404703-89b55fcc595e?w=800&q=80',
+    'https://images.unsplash.com/photo-1546776310-eef45dd6d63c?w=800&q=80',
+    'https://images.unsplash.com/photo-1561557944-6e7860d1a7eb?w=800&q=80',
+  ],
+  'rl': [
+    'https://images.unsplash.com/photo-1511512578047-dfb367046420?w=800&q=80',
+    'https://images.unsplash.com/photo-1493711662062-fa541f7f0e71?w=800&q=80',
+    'https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=800&q=80',
+  ],
+  'transformers': [
+    'https://images.unsplash.com/photo-1620712943543-bcc4688e7485?w=800&q=80',
+    'https://images.unsplash.com/photo-1558494949-ef010cbdcc31?w=800&q=80',
+    'https://images.unsplash.com/photo-1504868584819-f8e8b4b6d7e3?w=800&q=80',
+  ],
+  'safety': [
+    'https://images.unsplash.com/photo-1563986768609-322da13575f3?w=800&q=80',
+    'https://images.unsplash.com/photo-1555949963-ff9fe0c870eb?w=800&q=80',
+    'https://images.unsplash.com/photo-1614064641938-3bbee52942c7?w=800&q=80',
+  ],
+  'science': [
+    'https://images.unsplash.com/photo-1507413245164-6160d8298b31?w=800&q=80',
+    'https://images.unsplash.com/photo-1532094349884-543bc11b234d?w=800&q=80',
+    'https://images.unsplash.com/photo-1576086213369-97a306d36557?w=800&q=80',
+  ],
+  'efficiency': [
+    'https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=800&q=80',
+    'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800&q=80',
+    'https://images.unsplash.com/photo-1554224155-6726b3ff858f?w=800&q=80',
   ],
   'other': [
     'https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=800&q=80',

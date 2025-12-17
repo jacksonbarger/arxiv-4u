@@ -1,4 +1,5 @@
-export { AbstractArt } from './AbstractArt';
+export { CategoryGradientBar } from './CategoryGradientBar';
+export { GenerativeArt } from './GenerativeArt';
 export { CategoryPills } from './CategoryPills';
 export { SearchBar } from './SearchBar';
 export { BottomNav } from './BottomNav';
@@ -6,3 +7,4 @@ export type { NavItem } from './BottomNav';
 export { FilterDrawer } from './FilterDrawer';
 export { Header } from './Header';
 export { Footer } from './Footer';
+export { ThemeSelector } from './ThemeSelector';

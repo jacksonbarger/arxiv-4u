@@ -95,6 +95,16 @@ export function usePaperFilter() {
           'comfyui': 0,
           'runpod': 0,
           'market-opportunity': 0,
+          'nlp': 0,
+          'llm': 0,
+          'rag': 0,
+          'multimodal': 0,
+          'robotics': 0,
+          'rl': 0,
+          'transformers': 0,
+          'safety': 0,
+          'science': 0,
+          'efficiency': 0,
           'other': papers.length,
         };
       }

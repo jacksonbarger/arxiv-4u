@@ -14,30 +14,44 @@ import {
   recordPaidGeneration,
   trackUsageEvent,
 } from '@/lib/usage';
+import {
+  applyRateLimit,
+  businessPlanInputSchema,
+  validateRequestBody,
+  auditLog,
+  getClientInfo,
+} from '@/lib/security';
 
 export async function POST(req: NextRequest) {
   try {
-    // Check authentication
+    // Apply rate limiting (5 requests per minute for AI endpoints)
     const session = await auth();
+    const rateLimitResponse = await applyRateLimit(
+      req,
+      'ai:business-plan',
+      session?.user?.id
+    );
+    if (rateLimitResponse) {
+      return rateLimitResponse;
+    }
+
+    // Check authentication
     if (!session?.user?.email) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
+
+    // Validate request body with Zod schema
+    const validation = await validateRequestBody(req.clone(), businessPlanInputSchema);
+    if (!validation.success) {
+      return validation.response;
+    }
+
+    const { paper, categoryMatch, selectedStrategy, userInputs, paymentIntentId } = validation.data;
 
     // Get user from database
     const user = await getUserByEmail(session.user.email);
     if (!user) {
       return NextResponse.json({ error: 'User not found' }, { status: 404 });
-    }
-
-    // Get request body
-    const body = await req.json();
-    const { paper, categoryMatch, selectedStrategy, userInputs, paymentIntentId } = body;
-
-    if (!paper || !categoryMatch || !selectedStrategy) {
-      return NextResponse.json(
-        { error: 'Missing required fields' },
-        { status: 400 }
-      );
     }
 
     // Check access to this specific paper's business plan
@@ -147,6 +161,23 @@ export async function POST(req: NextRequest) {
       purchaseType,
     });
 
+    // Audit log successful generation
+    const { ip, requestId } = getClientInfo(req);
+    await auditLog({
+      action: purchaseType === 'one_time' ? 'business_plan:purchased' : 'business_plan:generated',
+      userId: user.id,
+      email: session.user.email,
+      ip,
+      requestId,
+      metadata: {
+        paperId: paper.id,
+        planId: savedPlan.id,
+        purchaseType,
+        amountPaid,
+      },
+      success: true,
+    });
+
     return NextResponse.json({
       success: true,
       plan: savedPlan,
@@ -154,6 +185,26 @@ export async function POST(req: NextRequest) {
     });
   } catch (error) {
     console.error('Error generating business plan:', error);
+
+    // Audit log failed generation (only if we have session)
+    try {
+      const session = await auth();
+      if (session?.user) {
+        const { ip, requestId } = getClientInfo(req);
+        await auditLog({
+          action: 'business_plan:generated',
+          userId: session.user.id,
+          email: session.user.email || undefined,
+          ip,
+          requestId,
+          success: false,
+          errorMessage: error instanceof Error ? error.message : 'Unknown error',
+        });
+      }
+    } catch {
+      // Ignore audit log errors
+    }
+
     return NextResponse.json(
       { error: 'Failed to generate business plan' },
       { status: 500 }

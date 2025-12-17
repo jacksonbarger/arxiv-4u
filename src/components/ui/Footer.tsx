@@ -2,10 +2,20 @@
 
 import Link from 'next/link';
 import Image from 'next/image';
+import { useTheme } from '@/contexts/ThemeContext';
 
 export function Footer() {
+  const { themeDefinition } = useTheme();
+  const colors = themeDefinition.colors;
+
   return (
-    <footer className="border-t bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-700">
+    <footer
+      className="border-t"
+      style={{
+        backgroundColor: colors.background,
+        borderColor: colors.border,
+      }}
+    >
       <div className="container mx-auto px-4 py-12">
         <div className="grid gap-8 md:grid-cols-4">
           {/* Brand */}
@@ -19,21 +29,22 @@ export function Footer() {
                 className="h-9 w-auto"
               />
             </Link>
-            <p className="text-sm text-slate-500 dark:text-slate-400">
+            <p className="text-sm" style={{ color: colors.foregroundMuted }}>
               Turn AI research papers into profitable products and businesses.
             </p>
           </div>
 
           {/* Navigation */}
           <div>
-            <h3 className="font-semibold mb-4 text-slate-800 dark:text-slate-200">
+            <h3 className="font-semibold mb-4" style={{ color: colors.foreground }}>
               Navigation
             </h3>
             <ul className="space-y-2">
               <li>
                 <Link
                   href="/"
-                  className="text-sm transition-colors hover:underline text-slate-500 dark:text-slate-400"
+                  className="text-sm transition-colors hover:underline"
+                  style={{ color: colors.foregroundMuted }}
                 >
                   Feed
                 </Link>
@@ -41,7 +52,8 @@ export function Footer() {
               <li>
                 <Link
                   href="/pricing"
-                  className="text-sm transition-colors hover:underline text-slate-500 dark:text-slate-400"
+                  className="text-sm transition-colors hover:underline"
+                  style={{ color: colors.foregroundMuted }}
                 >
                   Pricing
                 </Link>
@@ -49,7 +61,8 @@ export function Footer() {
               <li>
                 <Link
                   href="/demo4"
-                  className="text-sm transition-colors hover:underline text-slate-500 dark:text-slate-400"
+                  className="text-sm transition-colors hover:underline"
+                  style={{ color: colors.foregroundMuted }}
                 >
                   Demo
                 </Link>
@@ -59,7 +72,7 @@ export function Footer() {
 
           {/* Data Sources */}
           <div>
-            <h3 className="font-semibold mb-4 text-slate-800 dark:text-slate-200">
+            <h3 className="font-semibold mb-4" style={{ color: colors.foreground }}>
               Data Sources
             </h3>
             <ul className="space-y-2">
@@ -68,7 +81,8 @@ export function Footer() {
                   href="https://arxiv.org"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-sm transition-colors hover:underline text-slate-500 dark:text-slate-400"
+                  className="text-sm transition-colors hover:underline"
+                  style={{ color: colors.foregroundMuted }}
                 >
                   arXiv.org
                 </a>
@@ -78,7 +92,8 @@ export function Footer() {
                   href="https://www.semanticscholar.org"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-sm transition-colors hover:underline text-slate-500 dark:text-slate-400"
+                  className="text-sm transition-colors hover:underline"
+                  style={{ color: colors.foregroundMuted }}
                 >
                   Semantic Scholar
                 </a>
@@ -88,14 +103,15 @@ export function Footer() {
 
           {/* Legal */}
           <div>
-            <h3 className="font-semibold mb-4 text-slate-800 dark:text-slate-200">
+            <h3 className="font-semibold mb-4" style={{ color: colors.foreground }}>
               Legal
             </h3>
             <ul className="space-y-2">
               <li>
                 <Link
                   href="/privacy"
-                  className="text-sm transition-colors hover:underline text-slate-500 dark:text-slate-400"
+                  className="text-sm transition-colors hover:underline"
+                  style={{ color: colors.foregroundMuted }}
                 >
                   Privacy Policy
                 </Link>
@@ -103,7 +119,8 @@ export function Footer() {
               <li>
                 <Link
                   href="/terms"
-                  className="text-sm transition-colors hover:underline text-slate-500 dark:text-slate-400"
+                  className="text-sm transition-colors hover:underline"
+                  style={{ color: colors.foregroundMuted }}
                 >
                   Terms of Service
                 </Link>
@@ -113,18 +130,22 @@ export function Footer() {
         </div>
 
         {/* Bottom bar */}
-        <div className="mt-12 pt-8 border-t border-gray-200 dark:border-gray-700">
+        <div
+          className="mt-12 pt-8 border-t"
+          style={{ borderColor: colors.border }}
+        >
           <div className="flex flex-col md:flex-row items-center justify-between gap-4">
-            <p className="text-sm text-slate-400 dark:text-slate-500">
+            <p className="text-sm" style={{ color: colors.foregroundMuted }}>
               &copy; {new Date().getFullYear()} Arxiv-4U. All rights reserved.
             </p>
-            <p className="text-sm text-slate-400 dark:text-slate-500">
+            <p className="text-sm" style={{ color: colors.foregroundMuted }}>
               Built by{' '}
               <a
                 href="https://zentrex.io"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="hover:underline text-slate-500 dark:text-slate-400"
+                className="hover:underline"
+                style={{ color: colors.foregroundMuted }}
               >
                 Zentrex
               </a>

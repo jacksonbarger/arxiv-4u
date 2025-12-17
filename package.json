@@ -18,6 +18,7 @@
     "@radix-ui/react-avatar": "^1.1.11",
     "@radix-ui/react-separator": "^1.1.8",
     "@radix-ui/react-slot": "^1.2.4",
+    "@stripe/react-stripe-js": "^5.4.1",
     "@stripe/stripe-js": "^8.5.3",
     "@vercel/kv": "^3.0.0",
     "@vercel/postgres": "^0.10.0",
@@ -35,7 +36,8 @@
     "react-dom": "19.2.0",
     "resend": "^6.5.2",
     "stripe": "^20.0.0",
-    "tailwind-merge": "^3.4.0"
+    "tailwind-merge": "^3.4.0",
+    "zod": "^4.2.1"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3.3.1",

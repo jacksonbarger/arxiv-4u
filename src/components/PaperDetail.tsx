@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { ArxivPaper, CategoryMatch, TopicCategory } from '@/types/arxiv';
-import { AbstractArt } from './ui/AbstractArt';
+import { GenerativeArt } from './ui/GenerativeArt';
 import { CATEGORY_COLORS, CATEGORY_LABELS, CATEGORY_ICONS } from '@/lib/keywords';
 import { generateProfitInsights } from '@/lib/profitInsights';
 import { MarketingInsights, MarketingInsightsPaywall } from './MarketingInsights';
@@ -142,9 +142,10 @@ export function PaperDetail({
 
           {/* Hero image */}
           <div className="h-32 md:h-40 relative">
-            <AbstractArt
-              paperId={paper.id}
+            <GenerativeArt
+              title={paper.title}
               category={primaryCategory}
+              variant="featured"
               className="absolute inset-0"
             />
             <div className="absolute inset-0" style={{ background: 'linear-gradient(to top, #F5F3EF, transparent, rgba(0,0,0,0.2))' }} />
@@ -203,14 +204,15 @@ export function PaperDetail({
         {/* Paper image placeholder with caption */}
         <div className="rounded-2xl overflow-hidden mb-6" style={{ backgroundColor: '#EFECE6' }}>
           <div className="aspect-video relative">
-            <AbstractArt
-              paperId={paper.id + '-detail'}
+            <GenerativeArt
+              title={paper.title}
               category={primaryCategory}
+              variant="featured"
               className="absolute inset-0"
             />
           </div>
           <div className="p-3 text-xs text-center" style={{ color: '#718096' }}>
-            Abstract visualization for {paper.title.slice(0, 50)}...
+            {CATEGORY_LABELS[primaryCategory]} research paper
           </div>
         </div>
 

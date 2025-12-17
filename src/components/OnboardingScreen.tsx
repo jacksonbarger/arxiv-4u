@@ -1,6 +1,6 @@
 'use client';
 
-import { AbstractArt } from './ui/AbstractArt';
+import { GenerativeArt } from './ui/GenerativeArt';
 
 interface OnboardingScreenProps {
   onComplete: () => void;
@@ -9,10 +9,11 @@ interface OnboardingScreenProps {
 export function OnboardingScreen({ onComplete }: OnboardingScreenProps) {
   return (
     <div className="fixed inset-0 z-50 flex flex-col">
-      {/* Abstract art background */}
-      <AbstractArt
-        paperId="onboarding-splash"
+      {/* Generative art background */}
+      <GenerativeArt
+        title="Welcome to Arxiv-4U Research Discovery"
         category="market-opportunity"
+        variant="featured"
         className="absolute inset-0"
       />
 

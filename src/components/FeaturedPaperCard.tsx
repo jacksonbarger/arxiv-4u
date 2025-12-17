@@ -1,7 +1,7 @@
 'use client';
 
 import { ArxivPaper, CategoryMatch, TopicCategory } from '@/types/arxiv';
-import { AbstractArt } from './ui/AbstractArt';
+import { GenerativeArt } from './ui/GenerativeArt';
 import { CATEGORY_COLORS, CATEGORY_LABELS, CATEGORY_ICONS } from '@/lib/keywords';
 
 interface FeaturedPaperCardProps {
@@ -48,14 +48,15 @@ export function FeaturedPaperCard({
     >
       {/* Aspect ratio container */}
       <div className="aspect-[4/3] md:aspect-[16/9] relative">
-        {/* Abstract art background */}
-        <AbstractArt
-          paperId={paper.id}
+        {/* Generative art background */}
+        <GenerativeArt
+          title={paper.title}
           category={primaryCategory}
+          variant="featured"
           className="absolute inset-0"
         />
 
-        {/* Gradient overlay */}
+        {/* Gradient overlay for text readability */}
         <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent" />
 
         {/* Content */}

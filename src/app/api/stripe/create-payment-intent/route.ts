@@ -2,22 +2,38 @@ import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@/lib/auth';
 import { createPaymentIntent, getOrCreateStripeCustomer, PRICE_AMOUNTS } from '@/lib/stripe';
 import { getUserByEmail, hasAccessToBusinessPlan } from '@/lib/db';
+import {
+  applyRateLimit,
+  createPaymentIntentSchema,
+  validateRequestBody,
+  logPaymentEvent,
+} from '@/lib/security';
 
 export async function POST(req: NextRequest) {
   try {
-    // Check authentication
+    // Apply rate limiting (10 requests per minute for payment endpoints)
     const session = await auth();
+    const rateLimitResponse = await applyRateLimit(
+      req,
+      'stripe:payment-intent',
+      session?.user?.id
+    );
+    if (rateLimitResponse) {
+      return rateLimitResponse;
+    }
+
+    // Check authentication
     if (!session?.user?.email) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    // Get request body
-    const body = await req.json();
-    const { paperId } = body;
-
-    if (!paperId) {
-      return NextResponse.json({ error: 'Missing paperId' }, { status: 400 });
+    // Validate request body
+    const validation = await validateRequestBody(req.clone(), createPaymentIntentSchema);
+    if (!validation.success) {
+      return validation.response;
     }
+
+    const { paperId } = validation.data;
 
     // Get user from database
     const user = await getUserByEmail(session.user.email);
@@ -45,12 +61,44 @@ export async function POST(req: NextRequest) {
       customerId,
     });
 
+    // Audit log payment intent creation
+    await logPaymentEvent(
+      req,
+      'payment:intent_created',
+      user.id,
+      {
+        paperId,
+        paymentIntentId: paymentIntent.id,
+        amount: PRICE_AMOUNTS.PAY_PER_ARTICLE,
+        customerId,
+      },
+      true
+    );
+
     return NextResponse.json({
       clientSecret: paymentIntent.client_secret,
       paymentIntentId: paymentIntent.id,
     });
   } catch (error) {
     console.error('Error creating payment intent:', error);
+
+    // Audit log failed payment intent
+    try {
+      const session = await auth();
+      if (session?.user?.id) {
+        await logPaymentEvent(
+          req,
+          'payment:failed',
+          session.user.id,
+          { error: error instanceof Error ? error.message : 'Unknown error' },
+          false,
+          error instanceof Error ? error.message : 'Unknown error'
+        );
+      }
+    } catch {
+      // Ignore audit log errors
+    }
+
     return NextResponse.json(
       { error: 'Failed to create payment intent' },
       { status: 500 }

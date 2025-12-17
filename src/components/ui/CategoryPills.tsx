@@ -7,6 +7,7 @@ import {
   CATEGORY_ICONS,
   CATEGORY_PRIORITY,
 } from '@/lib/keywords';
+import { useTheme } from '@/contexts/ThemeContext';
 
 interface CategoryPillsProps {
   selectedCategories: TopicCategory[];
@@ -15,12 +16,37 @@ interface CategoryPillsProps {
   showAll?: boolean;
 }
 
+// Theme-aware color configurations
+const themeColors = {
+  light: {
+    pillBg: '#EFECE6',
+    pillBgHover: '#E5E2DC',
+    pillText: '#718096',
+    allSelectedBg: '#9EDCE1',
+    allSelectedText: '#4A5568',
+    countBg: 'rgba(0,0,0,0.1)',
+  },
+  dark: {
+    pillBg: '#374151',
+    pillBgHover: '#4B5563',
+    pillText: '#D1D5DB',
+    allSelectedBg: '#9EDCE1',
+    allSelectedText: '#1F2937',
+    countBg: 'rgba(255,255,255,0.15)',
+  },
+};
+
 export function CategoryPills({
   selectedCategories,
   onToggleCategory,
   categoryDistribution,
   showAll = false,
 }: CategoryPillsProps) {
+  const { themeDefinition } = useTheme();
+  // Use colorScheme (light/dark) instead of theme ID for styling
+  const colorScheme = themeDefinition.colorScheme;
+  const colors = themeColors[colorScheme];
+
   const categories = showAll
     ? CATEGORY_PRIORITY
     : CATEGORY_PRIORITY.filter((c) => c !== 'other');
@@ -37,10 +63,10 @@ export function CategoryPills({
             selectedCategories.forEach((c) => onToggleCategory(c));
           }
         }}
-        className="flex-shrink-0 px-4 py-2 rounded-full text-sm font-medium transition-all"
+        className="flex-shrink-0 px-4 py-2 rounded-full text-sm font-medium transition-all hover:scale-105"
         style={{
-          backgroundColor: isAllSelected ? '#9EDCE1' : '#EFECE6',
-          color: isAllSelected ? '#4A5568' : '#718096',
+          backgroundColor: isAllSelected ? colors.allSelectedBg : colors.pillBg,
+          color: isAllSelected ? colors.allSelectedText : colors.pillText,
         }}
       >
         All
@@ -49,17 +75,18 @@ export function CategoryPills({
       {categories.map((category) => {
         const isSelected = selectedCategories.includes(category);
         const count = categoryDistribution?.[category] || 0;
-        const color = CATEGORY_COLORS[category];
+        const categoryColor = CATEGORY_COLORS[category];
 
         return (
           <button
             key={category}
             onClick={() => onToggleCategory(category)}
-            className="flex-shrink-0 inline-flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-medium transition-all whitespace-nowrap"
+            className="flex-shrink-0 inline-flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-medium transition-all whitespace-nowrap hover:scale-105"
             style={{
-              backgroundColor: isSelected ? color : '#EFECE6',
-              color: isSelected ? '#FFFFFF' : color,
-              boxShadow: isSelected ? '0 4px 6px -1px rgba(0, 0, 0, 0.1)' : 'none',
+              backgroundColor: isSelected ? categoryColor : colors.pillBg,
+              color: isSelected ? '#FFFFFF' : categoryColor,
+              boxShadow: isSelected ? '0 4px 6px -1px rgba(0, 0, 0, 0.2)' : 'none',
+              border: isSelected ? 'none' : `1px solid ${colorScheme === 'dark' ? 'rgba(255,255,255,0.1)' : 'transparent'}`,
             }}
           >
             <span>{CATEGORY_ICONS[category]}</span>
@@ -68,7 +95,7 @@ export function CategoryPills({
               <span
                 className="ml-1 px-1.5 py-0.5 rounded-full text-[10px] font-semibold"
                 style={{
-                  backgroundColor: isSelected ? 'rgba(255,255,255,0.2)' : 'rgba(0,0,0,0.1)',
+                  backgroundColor: isSelected ? 'rgba(255,255,255,0.25)' : colors.countBg,
                   color: isSelected ? '#FFFFFF' : 'inherit',
                 }}
               >

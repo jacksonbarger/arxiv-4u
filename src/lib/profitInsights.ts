@@ -448,6 +448,316 @@ const PROFIT_STRATEGIES: Record<TopicCategory, (paper: ArxivPaper, keywords: str
     ]
   }),
 
+  'nlp': (paper, keywords) => ({
+    category: 'nlp',
+    marketContext: 'The NLP market is growing rapidly with applications in customer service, content generation, and data analysis.',
+    strategies: [
+      {
+        title: 'Text Analysis SaaS',
+        description: 'Build a specialized text analysis tool using NLP techniques.',
+        steps: [
+          'Identify high-value text analysis use cases',
+          'Build API endpoints for text processing',
+          'Create user-friendly dashboard',
+          'Implement usage-based pricing',
+          'Target specific industries with tailored solutions'
+        ],
+        estimatedRevenue: '$2K-10K/month',
+        timeToMarket: '4-8 weeks',
+        difficulty: 'intermediate'
+      }
+    ],
+    quickWins: [
+      'Create demo analyzing public datasets',
+      'Share NLP insights on technical blogs',
+      'Build browser extension for text analysis'
+    ],
+    resources: [
+      'Hugging Face for pre-trained models',
+      'spaCy for production NLP',
+      'FastAPI for quick API development'
+    ]
+  }),
+
+  'llm': (paper, keywords) => ({
+    category: 'llm',
+    marketContext: 'Large Language Models are transforming every industry. The market for LLM applications is expanding rapidly.',
+    strategies: [
+      {
+        title: 'Specialized LLM Application',
+        description: 'Build a domain-specific application leveraging LLM capabilities.',
+        steps: [
+          'Identify specific pain point LLMs can solve',
+          'Design prompts and fine-tuning strategy',
+          'Build user interface for the use case',
+          'Optimize for cost and latency',
+          'Launch with focused marketing'
+        ],
+        estimatedRevenue: '$5K-50K/month',
+        timeToMarket: '2-6 weeks',
+        difficulty: 'intermediate'
+      }
+    ],
+    quickWins: [
+      'Build GPT wrapper for specific use case',
+      'Create prompt engineering guides',
+      'Offer LLM consulting services'
+    ],
+    resources: [
+      'OpenAI, Anthropic APIs',
+      'LangChain for orchestration',
+      'Vector databases for RAG'
+    ]
+  }),
+
+  'rag': (paper, keywords) => ({
+    category: 'rag',
+    marketContext: 'Retrieval-Augmented Generation enables accurate, up-to-date AI responses. Enterprise adoption is accelerating.',
+    strategies: [
+      {
+        title: 'Knowledge Base RAG Service',
+        description: 'Build RAG systems for enterprise knowledge management.',
+        steps: [
+          'Build document ingestion pipeline',
+          'Implement vector search infrastructure',
+          'Create chat interface',
+          'Add source citations',
+          'Target enterprise sales'
+        ],
+        estimatedRevenue: '$3K-20K/month',
+        timeToMarket: '4-8 weeks',
+        difficulty: 'intermediate'
+      }
+    ],
+    quickWins: [
+      'Build RAG demo with public documents',
+      'Create comparison guides',
+      'Offer RAG implementation consulting'
+    ],
+    resources: [
+      'Pinecone, Weaviate for vectors',
+      'LlamaIndex for RAG pipelines',
+      'Evaluation frameworks'
+    ]
+  }),
+
+  'multimodal': (paper, keywords) => ({
+    category: 'multimodal',
+    marketContext: 'Multimodal AI combining text, images, and audio is enabling new creative and analytical applications.',
+    strategies: [
+      {
+        title: 'Multimodal Content Platform',
+        description: 'Build applications that process multiple content types together.',
+        steps: [
+          'Identify multimodal use case',
+          'Integrate vision and language models',
+          'Build processing pipeline',
+          'Create intuitive interface',
+          'Target creative professionals'
+        ],
+        estimatedRevenue: '$2K-15K/month',
+        timeToMarket: '6-10 weeks',
+        difficulty: 'advanced'
+      }
+    ],
+    quickWins: [
+      'Build image+text analysis demo',
+      'Create multimodal content tools',
+      'Share technical tutorials'
+    ],
+    resources: [
+      'GPT-4V, Claude Vision APIs',
+      'Open-source vision models',
+      'Media processing libraries'
+    ]
+  }),
+
+  'robotics': (paper, keywords) => ({
+    category: 'robotics',
+    marketContext: 'AI-powered robotics is transforming manufacturing, logistics, and service industries.',
+    strategies: [
+      {
+        title: 'Robotics Software Solution',
+        description: 'Develop software components for robotic systems.',
+        steps: [
+          'Identify robotics software gap',
+          'Build simulation environment',
+          'Develop core algorithms',
+          'Partner with hardware companies',
+          'License or sell software'
+        ],
+        estimatedRevenue: '$10K-100K+ licensing',
+        timeToMarket: '8-16 weeks',
+        difficulty: 'advanced'
+      }
+    ],
+    quickWins: [
+      'Create simulation demos',
+      'Contribute to robotics open-source',
+      'Build educational content'
+    ],
+    resources: [
+      'ROS for robotics framework',
+      'Gazebo, PyBullet for simulation',
+      'NVIDIA Isaac for development'
+    ]
+  }),
+
+  'rl': (paper, keywords) => ({
+    category: 'rl',
+    marketContext: 'Reinforcement Learning enables autonomous decision-making in gaming, trading, and optimization.',
+    strategies: [
+      {
+        title: 'RL-Powered Optimization',
+        description: 'Apply RL to real-world optimization problems.',
+        steps: [
+          'Find optimization problem with clear rewards',
+          'Build training environment',
+          'Train and evaluate RL agents',
+          'Deploy with monitoring',
+          'Demonstrate ROI to clients'
+        ],
+        estimatedRevenue: '$5K-50K per project',
+        timeToMarket: '6-12 weeks',
+        difficulty: 'advanced'
+      }
+    ],
+    quickWins: [
+      'Build game-playing demos',
+      'Create RL tutorials',
+      'Optimize simpler systems first'
+    ],
+    resources: [
+      'Stable Baselines3',
+      'OpenAI Gym environments',
+      'Ray RLlib for scaling'
+    ]
+  }),
+
+  'transformers': (paper, keywords) => ({
+    category: 'transformers',
+    marketContext: 'Transformer architectures power modern AI. Understanding them enables building competitive applications.',
+    strategies: [
+      {
+        title: 'Custom Transformer Solution',
+        description: 'Build specialized transformer-based applications.',
+        steps: [
+          'Identify use case for custom model',
+          'Prepare training data',
+          'Fine-tune or train transformer',
+          'Optimize for inference',
+          'Deploy as API or product'
+        ],
+        estimatedRevenue: '$3K-25K/month',
+        timeToMarket: '4-10 weeks',
+        difficulty: 'advanced'
+      }
+    ],
+    quickWins: [
+      'Fine-tune models for specific tasks',
+      'Create model comparison content',
+      'Offer fine-tuning services'
+    ],
+    resources: [
+      'Hugging Face Transformers',
+      'PyTorch for training',
+      'ONNX for optimization'
+    ]
+  }),
+
+  'safety': (paper, keywords) => ({
+    category: 'safety',
+    marketContext: 'AI safety is critical for enterprise adoption. Companies need tools to ensure responsible AI deployment.',
+    strategies: [
+      {
+        title: 'AI Safety Tooling',
+        description: 'Build tools for AI safety evaluation and monitoring.',
+        steps: [
+          'Identify safety requirements',
+          'Build evaluation framework',
+          'Create monitoring dashboard',
+          'Document compliance features',
+          'Target regulated industries'
+        ],
+        estimatedRevenue: '$5K-30K/month',
+        timeToMarket: '6-10 weeks',
+        difficulty: 'intermediate'
+      }
+    ],
+    quickWins: [
+      'Create safety evaluation guides',
+      'Build red-teaming tools',
+      'Offer safety audits'
+    ],
+    resources: [
+      'Safety evaluation frameworks',
+      'Responsible AI guidelines',
+      'Compliance documentation'
+    ]
+  }),
+
+  'science': (paper, keywords) => ({
+    category: 'science',
+    marketContext: 'AI for science is accelerating research in biology, chemistry, and physics with massive potential.',
+    strategies: [
+      {
+        title: 'Scientific AI Tool',
+        description: 'Build AI tools for scientific research and discovery.',
+        steps: [
+          'Partner with domain scientists',
+          'Understand specific research workflows',
+          'Build specialized AI pipeline',
+          'Validate with scientific rigor',
+          'Target research institutions'
+        ],
+        estimatedRevenue: '$10K-100K+ grants/contracts',
+        timeToMarket: '8-16 weeks',
+        difficulty: 'advanced'
+      }
+    ],
+    quickWins: [
+      'Create research data analysis tools',
+      'Build scientific visualization demos',
+      'Contribute to open science'
+    ],
+    resources: [
+      'Domain-specific datasets',
+      'Scientific computing libraries',
+      'Research collaboration platforms'
+    ]
+  }),
+
+  'efficiency': (paper, keywords) => ({
+    category: 'efficiency',
+    marketContext: 'AI efficiency improvements enable cost reduction and edge deployment. Critical for scaling AI.',
+    strategies: [
+      {
+        title: 'AI Optimization Service',
+        description: 'Help companies optimize their AI infrastructure costs.',
+        steps: [
+          'Audit existing AI systems',
+          'Identify optimization opportunities',
+          'Implement efficiency improvements',
+          'Measure and document savings',
+          'Build ongoing optimization service'
+        ],
+        estimatedRevenue: '$5K-30K per project',
+        timeToMarket: '2-6 weeks',
+        difficulty: 'intermediate'
+      }
+    ],
+    quickWins: [
+      'Create cost optimization guides',
+      'Build benchmarking tools',
+      'Share efficiency case studies'
+    ],
+    resources: [
+      'Model optimization tools',
+      'Cloud cost calculators',
+      'Inference optimization frameworks'
+    ]
+  }),
+
   'other': (paper, keywords) => ({
     category: 'other',
     marketContext: 'While not fitting a specific category, this research may have unique applications worth exploring.',

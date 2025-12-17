@@ -28,6 +28,17 @@ export type TopicCategory =
   | 'comfyui'
   | 'runpod'
   | 'market-opportunity'
+  // New AI research categories
+  | 'nlp'
+  | 'llm'
+  | 'rag'
+  | 'multimodal'
+  | 'robotics'
+  | 'rl'
+  | 'transformers'
+  | 'safety'
+  | 'science'
+  | 'efficiency'
   | 'other';
 
 export interface CategoryMatch {

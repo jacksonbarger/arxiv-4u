@@ -1,5 +1,7 @@
 'use client';
 
+import { useTheme } from '@/contexts/ThemeContext';
+
 export type NavItem = 'home' | 'categories' | 'search' | 'bookmarks' | 'settings';
 
 interface BottomNavProps {
@@ -88,8 +90,17 @@ const navItems: { id: NavItem; label: string; icon: React.ReactNode }[] = [
 ];
 
 export function BottomNav({ activeItem, onItemClick, bookmarkCount = 0 }: BottomNavProps) {
+  const { themeDefinition } = useTheme();
+  const colors = themeDefinition.colors;
+
   return (
-    <nav className="fixed bottom-0 left-0 right-0 z-50 pb-safe" style={{ backgroundColor: '#FFFFFF', borderTop: '1px solid #E2E8F0' }}>
+    <nav
+      className="fixed bottom-0 left-0 right-0 z-50 pb-safe"
+      style={{
+        backgroundColor: colors.card,
+        borderTop: `1px solid ${colors.border}`,
+      }}
+    >
       <div className="flex items-center justify-around px-2 py-2">
         {navItems.map((item) => {
           const isActive = activeItem === item.id;
@@ -100,13 +111,19 @@ export function BottomNav({ activeItem, onItemClick, bookmarkCount = 0 }: Bottom
               type="button"
               onClick={() => onItemClick(item.id)}
               className="relative flex flex-col items-center justify-center w-16 py-2 rounded-xl transition-all"
-              style={{ color: isActive ? '#4A5568' : '#718096' }}
+              style={{ color: isActive ? colors.foreground : colors.foregroundMuted }}
             >
               <div className="relative">
                 {item.icon}
                 {/* Badge for bookmarks */}
                 {item.id === 'bookmarks' && bookmarkCount > 0 && (
-                  <span className="absolute -top-1 -right-1 w-4 h-4 text-white text-[10px] font-bold rounded-full flex items-center justify-center" style={{ backgroundColor: '#9EDCE1' }}>
+                  <span
+                    className="absolute -top-1 -right-1 w-4 h-4 text-[10px] font-bold rounded-full flex items-center justify-center"
+                    style={{
+                      backgroundColor: colors.primary,
+                      color: colors.primaryForeground,
+                    }}
+                  >
                     {bookmarkCount > 9 ? '9+' : bookmarkCount}
                   </span>
                 )}
@@ -114,7 +131,10 @@ export function BottomNav({ activeItem, onItemClick, bookmarkCount = 0 }: Bottom
               <span className="text-[10px] mt-1 font-medium">{item.label}</span>
               {/* Active indicator */}
               {isActive && (
-                <div className="absolute -bottom-2 w-1 h-1 rounded-full" style={{ backgroundColor: '#9EDCE1' }} />
+                <div
+                  className="absolute -bottom-2 w-1 h-1 rounded-full"
+                  style={{ backgroundColor: colors.primary }}
+                />
               )}
             </button>
           );

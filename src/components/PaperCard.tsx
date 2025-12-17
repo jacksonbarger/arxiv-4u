@@ -2,6 +2,7 @@
 
 import { ArxivPaper, CategoryMatch } from '@/types/arxiv';
 import { CATEGORY_COLORS, CATEGORY_LABELS, CATEGORY_ICONS } from '@/lib/keywords';
+import { useTheme } from '@/contexts/ThemeContext';
 
 interface PaperCardProps {
   paper: ArxivPaper;
@@ -10,6 +11,9 @@ interface PaperCardProps {
 }
 
 export function PaperCard({ paper, categoryMatches = [], onSelect }: PaperCardProps) {
+  const { themeDefinition } = useTheme();
+  const colors = themeDefinition.colors;
+
   const formattedDate = new Date(paper.publishedDate).toLocaleDateString('en-US', {
     year: 'numeric',
     month: 'short',
@@ -24,7 +28,19 @@ export function PaperCard({ paper, categoryMatches = [], onSelect }: PaperCardPr
 
   return (
     <article
-      className="group relative flex flex-col rounded-lg border border-zinc-200 bg-white p-5 transition-all hover:border-zinc-300 hover:shadow-md dark:border-zinc-800 dark:bg-zinc-900 dark:hover:border-zinc-700"
+      className="group relative flex flex-col rounded-lg border p-5 transition-all cursor-pointer"
+      style={{
+        backgroundColor: colors.card,
+        borderColor: colors.cardBorder,
+      }}
+      onMouseEnter={(e) => {
+        e.currentTarget.style.borderColor = colors.border;
+        e.currentTarget.style.boxShadow = '0 4px 6px -1px rgba(0, 0, 0, 0.1)';
+      }}
+      onMouseLeave={(e) => {
+        e.currentTarget.style.borderColor = colors.cardBorder;
+        e.currentTarget.style.boxShadow = 'none';
+      }}
       onClick={() => onSelect?.(paper)}
     >
       {/* Category badges */}
@@ -48,12 +64,15 @@ export function PaperCard({ paper, categoryMatches = [], onSelect }: PaperCardPr
       )}
 
       {/* Title */}
-      <h3 className="mb-2 text-lg font-semibold leading-snug text-zinc-900 dark:text-zinc-100">
+      <h3 className="mb-2 text-lg font-semibold leading-snug" style={{ color: colors.foreground }}>
         <a
           href={paper.arxivUrl}
           target="_blank"
           rel="noopener noreferrer"
-          className="hover:text-blue-600 dark:hover:text-blue-400"
+          className="hover:underline transition-colors"
+          style={{ color: 'inherit' }}
+          onMouseEnter={(e) => (e.currentTarget.style.color = colors.primary)}
+          onMouseLeave={(e) => (e.currentTarget.style.color = 'inherit')}
           onClick={(e) => e.stopPropagation()}
         >
           {paper.title}
@@ -61,22 +80,28 @@ export function PaperCard({ paper, categoryMatches = [], onSelect }: PaperCardPr
       </h3>
 
       {/* Authors */}
-      <p className="mb-2 text-sm text-zinc-600 dark:text-zinc-400">
+      <p className="mb-2 text-sm" style={{ color: colors.foregroundMuted }}>
         {paper.authors.slice(0, 3).map(a => a.name).join(', ')}
         {paper.authors.length > 3 && ` +${paper.authors.length - 3} more`}
       </p>
 
       {/* Abstract */}
-      <p className="mb-4 flex-grow text-sm leading-relaxed text-zinc-700 dark:text-zinc-300">
+      <p className="mb-4 flex-grow text-sm leading-relaxed" style={{ color: colors.cardForeground }}>
         {truncatedAbstract}
       </p>
 
       {/* Footer */}
-      <div className="flex items-center justify-between border-t border-zinc-100 pt-3 dark:border-zinc-800">
+      <div
+        className="flex items-center justify-between border-t pt-3"
+        style={{ borderColor: colors.border }}
+      >
         {/* Date and arxiv categories */}
-        <div className="flex items-center gap-3 text-xs text-zinc-500 dark:text-zinc-500">
+        <div className="flex items-center gap-3 text-xs" style={{ color: colors.foregroundMuted }}>
           <span>{formattedDate}</span>
-          <span className="rounded bg-zinc-100 px-1.5 py-0.5 font-mono dark:bg-zinc-800">
+          <span
+            className="rounded px-1.5 py-0.5 font-mono"
+            style={{ backgroundColor: colors.muted, color: colors.foregroundMuted }}
+          >
             {paper.primaryCategory}
           </span>
         </div>
@@ -87,7 +112,13 @@ export function PaperCard({ paper, categoryMatches = [], onSelect }: PaperCardPr
             href={paper.pdfUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="rounded-md bg-zinc-100 px-3 py-1.5 text-xs font-medium text-zinc-700 transition-colors hover:bg-zinc-200 dark:bg-zinc-800 dark:text-zinc-300 dark:hover:bg-zinc-700"
+            className="rounded-md px-3 py-1.5 text-xs font-medium transition-colors"
+            style={{
+              backgroundColor: colors.muted,
+              color: colors.foreground,
+            }}
+            onMouseEnter={(e) => (e.currentTarget.style.opacity = '0.8')}
+            onMouseLeave={(e) => (e.currentTarget.style.opacity = '1')}
             onClick={(e) => e.stopPropagation()}
           >
             PDF
@@ -96,7 +127,13 @@ export function PaperCard({ paper, categoryMatches = [], onSelect }: PaperCardPr
             href={paper.arxivUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="rounded-md bg-blue-50 px-3 py-1.5 text-xs font-medium text-blue-700 transition-colors hover:bg-blue-100 dark:bg-blue-900/30 dark:text-blue-400 dark:hover:bg-blue-900/50"
+            className="rounded-md px-3 py-1.5 text-xs font-medium transition-colors"
+            style={{
+              backgroundColor: `${colors.primary}20`,
+              color: colors.primary,
+            }}
+            onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = `${colors.primary}30`)}
+            onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = `${colors.primary}20`)}
             onClick={(e) => e.stopPropagation()}
           >
             arXiv
@@ -106,16 +143,21 @@ export function PaperCard({ paper, categoryMatches = [], onSelect }: PaperCardPr
 
       {/* Matched keywords (collapsible detail) */}
       {topCategories.length > 0 && topCategories[0].matchedKeywords.length > 0 && (
-        <div className="mt-3 border-t border-zinc-100 pt-3 dark:border-zinc-800">
-          <details className="text-xs text-zinc-500">
-            <summary className="cursor-pointer hover:text-zinc-700 dark:hover:text-zinc-300">
+        <div className="mt-3 border-t pt-3" style={{ borderColor: colors.border }}>
+          <details className="text-xs" style={{ color: colors.foregroundMuted }}>
+            <summary
+              className="cursor-pointer transition-colors"
+              onMouseEnter={(e) => (e.currentTarget.style.color = colors.foreground)}
+              onMouseLeave={(e) => (e.currentTarget.style.color = colors.foregroundMuted)}
+            >
               Matched keywords
             </summary>
             <div className="mt-2 flex flex-wrap gap-1">
               {topCategories[0].matchedKeywords.slice(0, 10).map((keyword) => (
                 <span
                   key={keyword}
-                  className="rounded bg-zinc-100 px-1.5 py-0.5 dark:bg-zinc-800"
+                  className="rounded px-1.5 py-0.5"
+                  style={{ backgroundColor: colors.muted, color: colors.foregroundMuted }}
                 >
                   {keyword}
                 </span>
@@ -130,34 +172,79 @@ export function PaperCard({ paper, categoryMatches = [], onSelect }: PaperCardPr
 
 // Skeleton loader for PaperCard
 export function PaperCardSkeleton() {
+  const { themeDefinition } = useTheme();
+  const colors = themeDefinition.colors;
+
   return (
-    <div className="flex flex-col rounded-lg border border-zinc-200 bg-white p-5 dark:border-zinc-800 dark:bg-zinc-900">
+    <div
+      className="flex flex-col rounded-lg border p-5"
+      style={{
+        backgroundColor: colors.card,
+        borderColor: colors.cardBorder,
+      }}
+    >
       {/* Category badges skeleton */}
       <div className="mb-3 flex gap-2">
-        <div className="h-5 w-24 animate-pulse rounded-full bg-zinc-200 dark:bg-zinc-800" />
-        <div className="h-5 w-20 animate-pulse rounded-full bg-zinc-200 dark:bg-zinc-800" />
+        <div
+          className="h-5 w-24 animate-pulse rounded-full"
+          style={{ backgroundColor: colors.muted }}
+        />
+        <div
+          className="h-5 w-20 animate-pulse rounded-full"
+          style={{ backgroundColor: colors.muted }}
+        />
       </div>
 
       {/* Title skeleton */}
-      <div className="mb-2 h-6 w-full animate-pulse rounded bg-zinc-200 dark:bg-zinc-800" />
-      <div className="mb-2 h-6 w-3/4 animate-pulse rounded bg-zinc-200 dark:bg-zinc-800" />
+      <div
+        className="mb-2 h-6 w-full animate-pulse rounded"
+        style={{ backgroundColor: colors.muted }}
+      />
+      <div
+        className="mb-2 h-6 w-3/4 animate-pulse rounded"
+        style={{ backgroundColor: colors.muted }}
+      />
 
       {/* Authors skeleton */}
-      <div className="mb-2 h-4 w-1/2 animate-pulse rounded bg-zinc-200 dark:bg-zinc-800" />
+      <div
+        className="mb-2 h-4 w-1/2 animate-pulse rounded"
+        style={{ backgroundColor: colors.muted }}
+      />
 
       {/* Abstract skeleton */}
       <div className="mb-4 space-y-2">
-        <div className="h-4 w-full animate-pulse rounded bg-zinc-200 dark:bg-zinc-800" />
-        <div className="h-4 w-full animate-pulse rounded bg-zinc-200 dark:bg-zinc-800" />
-        <div className="h-4 w-2/3 animate-pulse rounded bg-zinc-200 dark:bg-zinc-800" />
+        <div
+          className="h-4 w-full animate-pulse rounded"
+          style={{ backgroundColor: colors.muted }}
+        />
+        <div
+          className="h-4 w-full animate-pulse rounded"
+          style={{ backgroundColor: colors.muted }}
+        />
+        <div
+          className="h-4 w-2/3 animate-pulse rounded"
+          style={{ backgroundColor: colors.muted }}
+        />
       </div>
 
       {/* Footer skeleton */}
-      <div className="flex items-center justify-between border-t border-zinc-100 pt-3 dark:border-zinc-800">
-        <div className="h-4 w-24 animate-pulse rounded bg-zinc-200 dark:bg-zinc-800" />
+      <div
+        className="flex items-center justify-between border-t pt-3"
+        style={{ borderColor: colors.border }}
+      >
+        <div
+          className="h-4 w-24 animate-pulse rounded"
+          style={{ backgroundColor: colors.muted }}
+        />
         <div className="flex gap-2">
-          <div className="h-7 w-12 animate-pulse rounded bg-zinc-200 dark:bg-zinc-800" />
-          <div className="h-7 w-12 animate-pulse rounded bg-zinc-200 dark:bg-zinc-800" />
+          <div
+            className="h-7 w-12 animate-pulse rounded"
+            style={{ backgroundColor: colors.muted }}
+          />
+          <div
+            className="h-7 w-12 animate-pulse rounded"
+            style={{ backgroundColor: colors.muted }}
+          />
         </div>
       </div>
     </div>

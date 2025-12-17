@@ -1,7 +1,7 @@
 'use client';
 
 import { ArxivPaper, CategoryMatch, TopicCategory } from '@/types/arxiv';
-import { AbstractArt } from './ui/AbstractArt';
+import { GenerativeArt } from './ui/GenerativeArt';
 import { CATEGORY_COLORS, CATEGORY_LABELS, CATEGORY_ICONS } from '@/lib/keywords';
 import { estimateReadingTime, getReadingTimeBadgeColor } from '@/lib/readingTime';
 
@@ -50,9 +50,10 @@ export function RecommendationCard({
       >
         {/* Thumbnail */}
         <div className="relative w-24 h-24 flex-shrink-0 rounded-xl overflow-hidden">
-          <AbstractArt
-            paperId={paper.id}
+          <GenerativeArt
+            title={paper.title}
             category={primaryCategory}
+            variant="compact"
             className="absolute inset-0"
           />
         </div>
@@ -93,9 +94,10 @@ export function RecommendationCard({
     >
       {/* Thumbnail */}
       <div className="relative w-28 h-28 md:w-32 md:h-32 flex-shrink-0 rounded-2xl overflow-hidden">
-        <AbstractArt
-          paperId={paper.id}
+        <GenerativeArt
+          title={paper.title}
           category={primaryCategory}
+          variant="default"
           className="absolute inset-0"
         />
         {/* Category badge overlay */}
